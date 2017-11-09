@@ -3,7 +3,7 @@
 require "primo/version"
 require "primo/config"
 require "primo/pnxs"
+require "primo/query"
 
 module Primo
-  # Your code goes here...
 end

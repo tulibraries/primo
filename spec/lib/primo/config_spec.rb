@@ -12,7 +12,7 @@ describe "Configuring Primo" do
 
     it "uses default values" do
       expect(Primo.configuration.apikey).to eql "TEST_API_KEY"
-      expect(Primo.configuration.region).to eql "https://api-na.hosted.exlibrisgroup.com"
+      expect(Primo.configuration.operator).to eql :AND
     end
 
     after(:all) do
@@ -27,13 +27,18 @@ describe "Configuring Primo" do
       end
     end
 
-    it "can override a default configuraton" do
+    it "default value for that attribute is overridden" do
       expect(Primo.configuration.apikey).to eql "SOME_OTHER_API_KEY"
+    end
+
+    it "still sets the default value for attributes not overriden" do
+      expect(Primo.configuration.region).to eql "https://api-na.hosted.exlibrisgroup.com"
     end
 
     after(:all) do
       Primo.configuration = nil
     end
+
 
   end
 end

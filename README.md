@@ -33,6 +33,9 @@ Primo.configure do |config|
   config.apikey     = 'EXAMPLE_PRIMO_API_KEY'
   # Primo gem defaults to querying Ex Libris's North American  Api servers. You can override that here.
   config.region   = "https://api-eu.hosted.exlibrisgroup.com
+
+  # By dafault advance queries are combined using the :AND logical operator.
+  config.operator = :AND
 end
 ```
 
