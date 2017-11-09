@@ -41,6 +41,18 @@ end
 
 Now you can access those configuration attributes with `Primo.configuration.apikey`
 
+### Making Requests
+
+#### Generating a Query object
+```ruby
+query = Primo::Pnxs::Query.new(
+    precision: :exact,
+    field: :facet_local23,
+    value: "bar",
+    operator: :AND)
+```
+This API wrapper validates the `query` object according the specifications documented in [the Ex Libris Api docs](https://developers.exlibrisgroup.com/primo/apis/webservices/xservices/search/briefsearch) for the `query` field.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
