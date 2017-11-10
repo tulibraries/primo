@@ -2,6 +2,8 @@
 
 require "bundler/setup"
 require "primo"
+require "pry"
+require "pry-byebug"
 
 RSpec.configure do |config|
   config.expect_with :rspec do |c|
