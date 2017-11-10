@@ -13,19 +13,24 @@ class Primo::Pnxs::Query
   end
 
   def initialize(params)
-    validate params
-    @queries = [params]
+    @queries = []
+    push params, Primo.configuration.operator
+  end
+
+  def and(params)
+    push(params, :AND)
+    self
   end
 
   def to_s
-    @queries.map { |q| q[:value] }
-      .join
-      .tr(",", " ")
+    @queries.map { |q| transform q }
+      .join(";")
   end
 
   private
     REQUIRED_PARAMS = [ :field, :precision, :value ]
     OPTIONAL_PARAMS = [ :operator ]
+    PARAM_ORDER = [ :field, :precision, :value, :operator ]
     OPERATOR_VALUES = [ :AND, :OR, :NOT ]
     PRECISION_VALUES = [ :contains, :exact, :begins_with ]
 
@@ -54,7 +59,17 @@ class Primo::Pnxs::Query
           message: lambda { |p| "Attempt to use non exact precision with facet field: #{p[:precision]}" } },
       ]
 
+    def push(params, operator)
+      query = @queries.pop
+      if query
+        @queries.push(query.merge(operator: operator))
+      end
+
+      validate(params) && @queries.push(params)
+    end
+
     def validate(params)
+      params = params || {}
       VALIDATORS.each { |validate|
         message = validate[:message][params]
         raise QueryError.new(message) unless self.send(validate[:query], params)
@@ -85,5 +100,25 @@ class Primo::Pnxs::Query
       field = params.fetch(:field)
       REGULAR_FIELDS.include?(field) ||
         FACET_FIELDS.include?(field) && precision == :exact
+    end
+
+    def transform(query)
+      PARAM_ORDER.map { |p|
+        if self.respond_to?(p, true)
+          self.send(p, query[p])
+        else
+          query[p]
+        end
+
+      }.join(",")
+    end
+
+    def value(value)
+      puts value
+      value.tr(",", " ")
+    end
+
+    def operator(value)
+      value || Primo.configuration.operator
     end
 end

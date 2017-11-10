@@ -2,6 +2,125 @@
 
 require "spec_helper"
 
+describe "#{Primo::Pnxs::Query} simple query"  do
+  context "pass valid parameters with no logic operator" do
+    let(:query) {
+      Primo.configure {}
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+      ) }
+    it "transforms to an expected string" do
+      expect(query.to_s).to eq("facet_local23,exact,bar,AND")
+    end
+  end
+
+  context "pass valid parameters with logic operator" do
+    let(:query) {
+      Primo.configure {}
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+        operator: :OR,
+      ) }
+    it "transforms to an expected string" do
+      expect(query.to_s).to eq("facet_local23,exact,bar,OR")
+    end
+  end
+end
+
+describe "#{Primo::Pnxs::Query}#and"  do
+  context "Add nil as the second param" do
+    let(:query) {
+      Primo.configure {}
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+      ) }
+    let(:query_foo) { nil }
+    it "throws an error" do
+      expect { query.and(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
+    end
+  end
+
+  context "Add an invalid query as the second param" do
+    let(:query) {
+      Primo.configure {}
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+      ) }
+    let(:query_foo) { {
+      precision: :contains,
+      field: :facet_local23,
+      value: "bar"
+    } }
+    it "throws an error" do
+      expect { query.and(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
+    end
+  end
+
+  context "Add a valid query as a second param" do
+    let(:query) {
+      Primo.configure {}
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+      ) }
+    let(:query_foo) { {
+      precision: :contains,
+      field: :title,
+      value: "bar"
+    } }
+    it "transforms to an expected string" do
+      expect(query.and(query_foo).to_s).to eq("facet_local23,exact,bar,AND;title,contains,bar,AND")
+    end
+  end
+
+  context "Add a valid query to query that contains OR operator" do
+    let(:query) {
+      Primo.configure {}
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+        operator: :OR,
+      ) }
+    let(:query_foo) { {
+      precision: :contains,
+      field: :title,
+      value: "bar"
+    } }
+    it "overrides the OR operator" do
+      expect(query.and(query_foo).to_s).to eq("facet_local23,exact,bar,AND;title,contains,bar,AND")
+    end
+  end
+
+  context "Add a valid query to query with default OR operator" do
+    let(:query) {
+      Primo.configure { |c| c.operator = :OR }
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+      ) }
+    let(:query_foo) { {
+      precision: :contains,
+      field: :title,
+      value: "bar"
+    } }
+    it "overrides the default OR operator" do
+      expect(query.and(query_foo).to_s).to eq("facet_local23,exact,bar,AND;title,contains,bar,OR")
+    end
+  end
+end
+
+
 describe "#{Primo::Pnxs::Query} parameter validation"  do
   #{{{2 params
   context "Initialize with no arguments" do
@@ -140,7 +259,7 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
     ) }
 
     it "replaces commas with spaces" do
-      expect("#{query}").to include("A B C")
+      expect(query.to_s).to include("A B C")
     end
   end
 end
