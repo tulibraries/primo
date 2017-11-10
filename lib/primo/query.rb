@@ -27,6 +27,11 @@ class Primo::Pnxs::Query
     self
   end
 
+  def not(params)
+    push(params, :NOT)
+    self
+  end
+
   def to_s
     @queries.map { |q| transform q }
       .join(";")
