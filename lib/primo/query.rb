@@ -22,6 +22,11 @@ class Primo::Pnxs::Query
     self
   end
 
+  def or(params)
+    push(params, :OR)
+    self
+  end
+
   def to_s
     @queries.map { |q| transform q }
       .join(";")

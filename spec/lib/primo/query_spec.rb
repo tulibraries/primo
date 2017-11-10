@@ -41,7 +41,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
         value: "bar",
       ) }
     let(:query_foo) { nil }
-    it "throws an error" do
+    it "throws a query error" do
       expect { query.and(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
     end
   end
@@ -59,7 +59,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
       field: :facet_local23,
       value: "bar"
     } }
-    it "throws an error" do
+    it "throws a query error" do
       expect { query.and(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
     end
   end
@@ -120,6 +120,94 @@ describe "#{Primo::Pnxs::Query}#and"  do
   end
 end
 
+describe "#{Primo::Pnxs::Query}#or"  do
+  context "Add nil as the second param" do
+    let(:query) {
+      Primo.configure {}
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+      ) }
+    let(:query_foo) { nil }
+    it "throws a query error" do
+      expect { query.or(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
+    end
+  end
+
+  context "Add an invalid query as the second param" do
+    let(:query) {
+      Primo.configure {}
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+      ) }
+    let(:query_foo) { {
+      precision: :contains,
+      field: :facet_local23,
+      value: "bar"
+    } }
+    it "throws a query error" do
+      expect { query.or(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
+    end
+  end
+
+  context "Add a valid query as a second param" do
+    let(:query) {
+      Primo.configure { |c| c.operator = :AND }
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+      ) }
+    let(:query_foo) { {
+      precision: :contains,
+      field: :title,
+      value: "bar"
+    } }
+    it "transforms to an expected string" do
+      expect(query.or(query_foo).to_s).to eq("facet_local23,exact,bar,OR;title,contains,bar,AND")
+    end
+  end
+
+  context "Add a valid query to query that contains AND operator" do
+    let(:query) {
+      Primo.configure { |c| c.operator = :AND }
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+        operator: :AND,
+      ) }
+    let(:query_foo) { {
+      precision: :contains,
+      field: :title,
+      value: "bar"
+    } }
+    it "overrides the AND operator" do
+      expect(query.or(query_foo).to_s).to eq("facet_local23,exact,bar,OR;title,contains,bar,AND")
+    end
+  end
+
+  context "Add a valid query to query with default NOT operator" do
+    let(:query) {
+      Primo.configure { |c| c.operator = :NOT }
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+      ) }
+    let(:query_foo) { {
+      precision: :contains,
+      field: :title,
+      value: "bar"
+    } }
+    it "overrides the default NOT operator" do
+      expect(query.or(query_foo).to_s).to eq("facet_local23,exact,bar,OR;title,contains,bar,NOT")
+    end
+  end
+end
 
 describe "#{Primo::Pnxs::Query} parameter validation"  do
   #{{{2 params

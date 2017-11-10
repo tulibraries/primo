@@ -62,6 +62,7 @@ query = Primo::Pnxs::Query.new(
     operator: :AND)
 
 query.and( field: :title, precision: :contains, value: "foo")
+query.or( field: :title, precision: :contains, value: "foo")
 ```
 This API wrapper validates the `query` object according the specifications documented in [the Ex Libris Api docs](https://developers.exlibrisgroup.com/primo/apis/webservices/xservices/search/briefsearch) for the `query` field.
 ## Development
