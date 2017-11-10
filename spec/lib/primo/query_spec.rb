@@ -32,7 +32,7 @@ describe "#{Primo::Pnxs::Query} simple query"  do
 end
 
 describe "#{Primo::Pnxs::Query}#and"  do
-  context "Add nil as the second param" do
+  context "add nil as the second query" do
     let(:query) {
       Primo.configure {}
       Primo::Pnxs::Query.new(
@@ -46,7 +46,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
     end
   end
 
-  context "Add an invalid query as the second param" do
+  context "add an invalid query as the second query" do
     let(:query) {
       Primo.configure {}
       Primo::Pnxs::Query.new(
@@ -64,7 +64,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
     end
   end
 
-  context "Add a valid query as a second param" do
+  context "add a valid query as a second query" do
     let(:query) {
       Primo.configure {}
       Primo::Pnxs::Query.new(
@@ -82,7 +82,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
     end
   end
 
-  context "Add a valid query to query that contains OR operator" do
+  context "add a valid query to query that contains OR operator" do
     let(:query) {
       Primo.configure {}
       Primo::Pnxs::Query.new(
@@ -101,7 +101,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
     end
   end
 
-  context "Add a valid query to query with default OR operator" do
+  context "add a valid query to query with default OR operator" do
     let(:query) {
       Primo.configure { |c| c.operator = :OR }
       Primo::Pnxs::Query.new(
@@ -121,7 +121,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
 end
 
 describe "#{Primo::Pnxs::Query}#or"  do
-  context "Add nil as the second param" do
+  context "add nil as the second query" do
     let(:query) {
       Primo.configure {}
       Primo::Pnxs::Query.new(
@@ -135,7 +135,7 @@ describe "#{Primo::Pnxs::Query}#or"  do
     end
   end
 
-  context "Add an invalid query as the second param" do
+  context "add an invalid query as the second query" do
     let(:query) {
       Primo.configure {}
       Primo::Pnxs::Query.new(
@@ -153,7 +153,7 @@ describe "#{Primo::Pnxs::Query}#or"  do
     end
   end
 
-  context "Add a valid query as a second param" do
+  context "add a valid query as a second query" do
     let(:query) {
       Primo.configure { |c| c.operator = :AND }
       Primo::Pnxs::Query.new(
@@ -171,7 +171,7 @@ describe "#{Primo::Pnxs::Query}#or"  do
     end
   end
 
-  context "Add a valid query to query that contains AND operator" do
+  context "add a valid query to query that contains AND operator" do
     let(:query) {
       Primo.configure { |c| c.operator = :AND }
       Primo::Pnxs::Query.new(
@@ -190,7 +190,7 @@ describe "#{Primo::Pnxs::Query}#or"  do
     end
   end
 
-  context "Add a valid query to query with default NOT operator" do
+  context "add a valid query to query with default NOT operator" do
     let(:query) {
       Primo.configure { |c| c.operator = :NOT }
       Primo::Pnxs::Query.new(
@@ -210,7 +210,7 @@ describe "#{Primo::Pnxs::Query}#or"  do
 end
 
 describe "#{Primo::Pnxs::Query}#and"  do
-  context "Add nil as the second param" do
+  context "add nil as the second query" do
     let(:query) {
       Primo.configure {}
       Primo::Pnxs::Query.new(
@@ -224,7 +224,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
     end
   end
 
-  context "Add an invalid query as the second param" do
+  context "add an invalid query as the second query" do
     let(:query) {
       Primo.configure {}
       Primo::Pnxs::Query.new(
@@ -242,7 +242,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
     end
   end
 
-  context "Add a valid query as a second param" do
+  context "add a valid query as a second query" do
     let(:query) {
       Primo.configure { |c| c.operator = :AND }
       Primo::Pnxs::Query.new(
@@ -260,7 +260,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
     end
   end
 
-  context "Add a valid query to query that contains AND operator" do
+  context "add a valid query to query that contains AND operator" do
     let(:query) {
       Primo.configure { |c| c.operator = :AND }
       Primo::Pnxs::Query.new(
@@ -279,7 +279,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
     end
   end
 
-  context "Add a valid query to query with default NOT operator" do
+  context "add a valid query to query with default NOT operator" do
     let(:query) {
       Primo.configure { |c| c.operator = :NOT }
       Primo::Pnxs::Query.new(
@@ -294,6 +294,79 @@ describe "#{Primo::Pnxs::Query}#and"  do
     } }
     it "overrides the default NOT operator" do
       expect(query.not(query_foo).to_s).to eq("facet_local23,exact,bar,NOT;title,contains,bar,NOT")
+    end
+  end
+end
+
+describe "#{Primo::Pnxs::Query}::build" do
+  context "pass nil as an argument" do
+    it "throws an error" do
+      expect { Primo::Pnxs::Query::build(nil) }.to raise_error(ArgumentError)
+    end
+  end
+
+  context "pass [] as an argument" do
+    it "throws an error" do
+      expect { Primo::Pnxs::Query::build([]) }.to raise_error(ArgumentError)
+    end
+  end
+
+  context "pass invalid [query]" do
+    let(:query) { {
+      precision: :foo,
+      field: :title,
+      value: "bar"
+    } }
+    it "throws a query error" do
+      expect { Primo::Pnxs::Query::build([query]) }.to raise_error(Primo::Pnxs::Query::QueryError)
+    end
+  end
+
+  context "pass valid [query]" do
+    let(:query) { {
+      precision: :contains,
+      field: :title,
+      value: "bar",
+      operator: :OR,
+    } }
+    it "it returns a Query" do
+      expect(Primo::Pnxs::Query::build([query])).to be_an_instance_of(Primo::Pnxs::Query)
+    end
+
+    it "transforms to an expected string" do
+      expect(Primo::Pnxs::Query::build([query]).to_s).to eq("title,contains,bar,OR")
+    end
+  end
+
+  context "pass multiple valid [queries]" do
+    let(:query) { {
+      precision: :contains,
+      field: :title,
+      value: "bar",
+      operator: :OR,
+    } }
+    it "it returns a Query" do
+      expect(Primo::Pnxs::Query::build([query, query, query])).to be_an_instance_of(Primo::Pnxs::Query)
+    end
+
+    it "transforms to an expected string" do
+      expect(Primo::Pnxs::Query::build([query, query]).to_s).to eq("title,contains,bar,OR;title,contains,bar,OR")
+    end
+  end
+
+  context "pass mixed valid and invalid [queries]" do
+    let(:query) { {
+      precision: :contains,
+      field: :title,
+      value: "bar",
+      operator: :OR,
+    } }
+    it "it returns a Query" do
+      expect { Primo::Pnxs::Query::build([query, nil]) }.to raise_error(Primo::Pnxs::Query::QueryError)
+    end
+
+    it "it returns a Query" do
+      expect { Primo::Pnxs::Query::build([nil, query]) }.to raise_error(Primo::Pnxs::Query::QueryError)
     end
   end
 end

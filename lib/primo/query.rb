@@ -14,22 +14,29 @@ class Primo::Pnxs::Query
 
   def initialize(params)
     @queries = []
-    push params, Primo.configuration.operator
+    push params
   end
 
   def and(params)
     push(params, :AND)
-    self
   end
 
   def or(params)
     push(params, :OR)
-    self
   end
 
   def not(params)
     push(params, :NOT)
-    self
+  end
+
+  def self.build(queries)
+    queries ||= []
+    first_query = queries.pop
+    query = new(first_query)
+    queries.each { |q|
+      query.send(:push, q)
+    }
+    query
   end
 
   def to_s
@@ -69,17 +76,21 @@ class Primo::Pnxs::Query
           message: lambda { |p| "Attempt to use non exact precision with facet field: #{p[:precision]}" } },
       ]
 
-    def push(params, operator)
+    def push(params, operator = nil)
+      params ||= {}
+      operator = operator || params[:operator] || Primo.configuration.operator
       query = @queries.pop
+
       if query
         @queries.push(query.merge(operator: operator))
       end
 
       validate(params) && @queries.push(params)
+      self
     end
 
     def validate(params)
-      params = params || {}
+      params ||= {}
       VALIDATORS.each { |validate|
         message = validate[:message][params]
         raise QueryError.new(message) unless self.send(validate[:query], params)
