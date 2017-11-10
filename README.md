@@ -2,8 +2,8 @@
 
 A client that wraps the Primo PNX REST API. The primary motivator for this
 wrapper is to set up the authentication against the Primo PNX server in a
-canonical and configurable way and to wrap the end point results in order to
-guard against changes and thus create dependencies to known stable fields.
+canonical and configurable way and to against changes and thus create
+dependencies to known stable fields.
 
 ## Installation
 
