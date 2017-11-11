@@ -43,7 +43,7 @@ Now you can access those configuration attributes with `Primo.configuration.apik
 
 ### Making Requests
 
-`Primo::Pnxs::get` takes a hash of attributes as defined in the [Primo PNXS REST API](https://developers.exlibrisgroup.com/primo/apis/webservices/rest/pnxs) page and returns the API request result wrapped in an instance of the `Primo::Pnxs` class
+`Primo::Pnxs::get` takes a hash of attributes as defined in the [Primo PNX REST API](https://developers.exlibrisgroup.com/primo/apis/webservices/rest/pnxs) page and returns the API request result wrapped in an instance of the `Primo::Pnxs` class
 
 ```ruby
   # q is an instance of Primo::Pnxs::Query, see the next section for details.

@@ -135,7 +135,6 @@ class Primo::Pnxs::Query
     end
 
     def value(value)
-      puts value
       value.tr(",", " ")
     end
 
