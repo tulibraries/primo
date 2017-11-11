@@ -86,9 +86,49 @@ RSpec.describe Primo::Pnxs do
     Primo::Pnxs::get q: q
   }
 
-  it "should headers" do
+  it "should respond to :docs with non nil" do
+    expect(pnxs.docs).not_to be_nil
   end
 
-  it "should return an instance of Pnxs" do
+  it "should respond to :timelog with non nil" do
+    expect(pnxs.timelog).not_to be_nil
+  end
+
+  it "should respond to :lang3 with non nil" do
+    expect(pnxs.lang3).not_to be_nil
+  end
+
+  it "should respond to :info with non nil" do
+    expect(pnxs.info).not_to be_nil
+  end
+
+  it "should respond to :facets with non nil" do
+    expect(pnxs.facets).not_to be_nil
+  end
+
+  it "should respond to :beaconO22 with non nil" do
+    expect(pnxs.beaconO22).not_to be_nil
+  end
+
+  context "getting 400 response from server" do
+    let(:pnxs) {
+
+      stub_request(:get, /.*www\.foobar\.com\/.*/).
+      to_return(status: 400, body: "Hello World")
+
+      Primo.configure { |c| c.region = "https://www.foobar.com" }
+
+      q = Primo::Pnxs::Query.new(
+        precision: :contains,
+        field: :title,
+        value: "otter",
+        operator: :OR,
+      )
+      Primo::Pnxs::get q: q
+    }
+
+    it "should throw a pnxs error" do
+      expect { pnxs }.to raise_error(Primo::Pnxs::PnxsError)
+    end
   end
 end

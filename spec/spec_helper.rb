@@ -6,6 +6,7 @@ require "pry"
 require "pry-byebug"
 require "binding_of_caller"
 require "webmock"
+require "webmock/rspec"
 require "vcr"
 
 RSpec.configure do |config|

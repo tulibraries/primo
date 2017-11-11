@@ -1,8 +1,8 @@
-# Primo
+# Primo [![Build Status](https://travis-ci.org/tulibraries/primo.svg?branch=master)](https://travis-ci.org/tulibraries/primo)
 
 A client that wraps the Primo PNX REST API. The primary motivator for this
 wrapper is to set up the authentication against the Primo PNX server in a
-canonical and configurable way and to against changes and thus create
+canonical and configurable way and to guard against changes and thus create
 dependencies to known stable fields.
 
 ## Installation
@@ -42,6 +42,18 @@ end
 Now you can access those configuration attributes with `Primo.configuration.apikey`
 
 ### Making Requests
+
+`Primo::Pnxs::get` takes a hash of attributes as defined in the [Primo PNXS REST API](https://developers.exlibrisgroup.com/primo/apis/webservices/rest/pnxs) page and returns the API request result wrapped in an instance of the `Primo::Pnxs` class
+
+```ruby
+  # q is an instance of Primo::Pnxs::Query, see the next section for details.
+  pnxs = Primo::Pnxs::get q: q
+
+  pnxs.docs.first.date
+  pnxs.info
+  pnxs.facets
+  # ...
+```
 
 #### Generating a Query object
 ```ruby
@@ -84,4 +96,3 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/tulibr
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-

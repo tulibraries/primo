@@ -11,4 +11,3 @@ RSpec.describe Primo do
     expect(Primo::Pnxs).not_to be nil
   end
 end
-

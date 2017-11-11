@@ -9,8 +9,11 @@ module Primo
 
     include HTTParty
 
+    FIELDS = %i( docs timelog lang3 info facets beaconO22 )
+
     def initialize(response)
       validate response
+      initialize_fields response
     end
 
     # Overrides HTTParty::get in order to add some custom validations.
@@ -23,6 +26,7 @@ module Primo
 
   private
     RESOURCE = "/primo/v1/pnxs"
+
 
     PARAMETER_KEYS = %i(
       inst q qInclude qExclude lang offset limit sort
@@ -65,6 +69,25 @@ module Primo
 
     def self.only_known_parameters?(params)
       (params.keys - PARAMETER_KEYS).empty?
+    end
+
+    def initialize_fields(response)
+      FIELDS.each do |f|
+        self.class.send(:attr_reader, f)
+        obj = to_struct(response["#{f}"])
+        instance_variable_set("@#{f}", obj)
+      end
+    end
+
+    # Allows us to access returned data using dot notation.
+    def to_struct(obj)
+      if obj.instance_of? Hash
+        OpenStruct.new obj
+      elsif obj.instance_of? Array
+        obj.map { |o| to_struct o }
+      else
+        obj
+      end
     end
   end
 end
