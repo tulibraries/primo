@@ -14,7 +14,7 @@ RSpec.describe "#{Primo::Pnxs}#get" do
   end
 
   context "passing nil" do
-    it "should throw a pnxs error" do
+    it "should raise a pnxs error" do
       expect { Primo::Pnxs::get() }.to raise_error(Primo::Pnxs::PnxsError)
       expect { Primo::Pnxs::get nil }.to raise_error(Primo::Pnxs::PnxsError)
     end
@@ -23,7 +23,7 @@ RSpec.describe "#{Primo::Pnxs}#get" do
   context "passing invalid query" do
     let(:options) { { q: nil } }
 
-    it "should throw a pnxs error" do
+    it "should raise a pnxs error" do
       expect { Primo::Pnxs::get(options) }.to raise_error(Primo::Pnxs::PnxsError)
     end
   end
@@ -39,7 +39,7 @@ RSpec.describe "#{Primo::Pnxs}#get" do
       { q: q, foo: "bar" }
     }
 
-    it "should throw a pnxs error" do
+    it "should raise a pnxs error" do
       expect { Primo::Pnxs::get(options) }.to raise_error(Primo::Pnxs::PnxsError)
     end
   end
@@ -55,7 +55,7 @@ RSpec.describe "#{Primo::Pnxs}#get" do
       { q: q }
     }
 
-    it "should not throw errors" do
+    it "should not raise errors" do
       expect { Primo::Pnxs::get(options) }.to_not raise_error
     end
 
@@ -127,7 +127,7 @@ RSpec.describe Primo::Pnxs do
       Primo::Pnxs::get q: q
     }
 
-    it "should throw a pnxs error" do
+    it "should raise a pnxs error" do
       expect { pnxs }.to raise_error(Primo::Pnxs::PnxsError)
     end
   end

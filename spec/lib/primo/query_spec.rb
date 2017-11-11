@@ -41,7 +41,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
         value: "bar",
       ) }
     let(:query_foo) { nil }
-    it "throws a query error" do
+    it "raises a query error" do
       expect { query.and(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
     end
   end
@@ -59,7 +59,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
       field: :facet_local23,
       value: "bar"
     } }
-    it "throws a query error" do
+    it "raises a query error" do
       expect { query.and(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
     end
   end
@@ -130,7 +130,7 @@ describe "#{Primo::Pnxs::Query}#or"  do
         value: "bar",
       ) }
     let(:query_foo) { nil }
-    it "throws a query error" do
+    it "raises a query error" do
       expect { query.or(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
     end
   end
@@ -148,7 +148,7 @@ describe "#{Primo::Pnxs::Query}#or"  do
       field: :facet_local23,
       value: "bar"
     } }
-    it "throws a query error" do
+    it "raises a query error" do
       expect { query.or(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
     end
   end
@@ -219,7 +219,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
         value: "bar",
       ) }
     let(:query_foo) { nil }
-    it "throws a query error" do
+    it "raises a query error" do
       expect { query.not(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
     end
   end
@@ -237,7 +237,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
       field: :facet_local23,
       value: "bar"
     } }
-    it "throws a query error" do
+    it "raises a query error" do
       expect { query.not(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
     end
   end
@@ -300,13 +300,13 @@ end
 
 describe "#{Primo::Pnxs::Query}::build" do
   context "pass nil as an argument" do
-    it "throws an error" do
+    it "raises an error" do
       expect { Primo::Pnxs::Query::build(nil) }.to raise_error(ArgumentError)
     end
   end
 
   context "pass [] as an argument" do
-    it "throws an error" do
+    it "raises an error" do
       expect { Primo::Pnxs::Query::build([]) }.to raise_error(ArgumentError)
     end
   end
@@ -317,7 +317,7 @@ describe "#{Primo::Pnxs::Query}::build" do
       field: :title,
       value: "bar"
     } }
-    it "throws a query error" do
+    it "raises a query error" do
       expect { Primo::Pnxs::Query::build([query]) }.to raise_error(Primo::Pnxs::Query::QueryError)
     end
   end
@@ -361,11 +361,11 @@ describe "#{Primo::Pnxs::Query}::build" do
       value: "bar",
       operator: :OR,
     } }
-    it "it returns a Query" do
+    it "it raises a query error" do
       expect { Primo::Pnxs::Query::build([query, nil]) }.to raise_error(Primo::Pnxs::Query::QueryError)
     end
 
-    it "it returns a Query" do
+    it "it raises a query error" do
       expect { Primo::Pnxs::Query::build([nil, query]) }.to raise_error(Primo::Pnxs::Query::QueryError)
     end
   end
