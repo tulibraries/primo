@@ -3,77 +3,174 @@
 require "httparty"
 
 module Primo
+  # Encapsolates the Primo PNXS REST API
   class Pnxs
     class PnxsError < ArgumentError
     end
 
-    include HTTParty
+    module ParameterValidator
+      # Generic validation for objects that apply a `validators` interface.
+      def validate(params)
+        validators.each do |validate|
+          message = validate[:message][params]
+          if !send(validate[:query], params)
+            raise PnxsError.new(message)
+          end
+        end
+      end
+    end
 
-    FIELDS = %i( docs timelog lang3 info facets beaconO22 )
+    include HTTParty
+    include ParameterValidator
 
     def initialize(response)
       validate response
+      # object attribute readers that begin with @ throw an error.
+      @response = response
+      @fields = response.keys
+        .select { |f| !f.match(/^@/) }
       initialize_fields response
     end
 
     # Overrides HTTParty::get in order to add some custom validations.
     def self.get(params = {})
-      validate params
-      params.merge! apikey: Primo.configuration.apikey, q: params[:q].to_s
-      url = Primo.configuration.region + RESOURCE
-      new super(url, query: params)
+      method = get_method params
+      new super(method.url, query: method.params)
     end
 
   private
-    RESOURCE = "/primo/v1/pnxs"
+    # Base class for classes encapsolating Primo REST API methods.
+    class PnxsMethod
+      include ParameterValidator
 
+      def initialize(params = {})
+        validate(params)
+        @params = params
+      end
 
-    PARAMETER_KEYS = %i(
-      inst q qInclude qExclude lang offset limit sort
-      view addfields vid scope
-    )
-    VALIDATORS = [
-      { query: :is_200?,
-        message: lambda { |r| "Attempting to work with an invalid response: #{r.code}" } },
-    ]
-    GET_VALIDATORS = [
-      { query: :has_query?,
-        message: lambda { |p| "field :q is required " } },
-      { query: :only_known_parameters?,
-        message: lambda { |p| "field :q is required " } },
-    ]
+      protected
+        def auth(env = :hosted)
+          env ||= :hosted
+          auths = {
+            hosted: { apikey: Primo.configuration.apikey },
+            local: { inst: Primo.configuration.inst },
+          }
+          auths[env]
+        end
 
-    def validate(response)
-      response ||= {}
-      VALIDATORS.each { |validate|
-        message = validate[:message][response]
-        raise PnxsError.new(message) unless self.send(validate[:query], response)
-      }
+        RESOURCE = "/primo/v1/pnxs"
+    end
+
+    # Encapsolates the GET /v1/pnxs Primo REST API Method URL and Parameters.
+    class SearchMethod < PnxsMethod
+      def url
+        Primo.configuration.region + RESOURCE
+      end
+
+      def params
+        auth = {}
+        @params.merge(auth)
+          .merge q: @params[:q].to_s
+      end
+
+      def self.can_process?(params = {})
+        params ||= {}
+        params.include?(:q)
+      end
+
+      private
+
+        PARAMETER_KEYS = %i(
+          inst q qInclude qExclude lang offset limit sort
+          view addfields vid scope
+        )
+
+        def validators
+          [{ query: :has_valid_query?,
+            message: lambda { |p| "field :q must be a valid instance of Primo::Pnxs::Query " } },
+          { query: :only_known_parameters?,
+            message: lambda { |p| "field :q is required " } },
+          ]
+        end
+
+        def has_valid_query?(params)
+          params[:q].instance_of?(Primo::Pnxs::Query)
+        end
+
+        def only_known_parameters?(params)
+          (params.keys - PARAMETER_KEYS).empty?
+        end
+    end
+
+    # Encapsolates the GET /v1/pnxs/{context}/{recordId} Primo REST API Method
+    # URL and Parameters.
+    class RecordMethod < PnxsMethod
+      def url
+        context = @params[:context]
+        id = @params[:id]
+        Primo.configuration.region + RESOURCE + "/#{context}/#{id}"
+      end
+
+      def params
+        @params.select { |k, v| !URL_KEYS.include? k }
+          .merge auth
+      end
+
+      def self.can_process?(params = {})
+        params ||= {}
+        params.include?(:id)
+      end
+
+      private
+
+        URL_KEYS = %i(id context)
+        PARAMETER_KEYS = %i( inst lang )
+
+        def validators
+          [
+          { query: :only_known_parameters?,
+            message: lambda { |p| "field :q is required " } },
+          ]
+        end
+
+        def only_known_parameters?(params)
+          (params.keys - PARAMETER_KEYS - URL_KEYS).empty?
+        end
+    end
+
+    # Catch all Method.
+    class DefaultMethod < PnxsMethod
+      def initialize(params = {})
+        raise PnxsError.new "No method found to process given parameters."
+      end
+
+      def self.can_process?(params = {})
+        true
+      end
+    end
+
+    REGISTERED_METHODS = [SearchMethod, RecordMethod, DefaultMethod]
+
+    def self.get_method(params)
+      REGISTERED_METHODS
+        .find { |m| m.can_process? params }
+        .new(params)
+    end
+
+    def validators
+      [
+        { query: :is_200?,
+          message: lambda { |r| "Attempting to work with an invalid response: #{r.code}" } },
+      ]
     end
 
     def is_200?(response)
       response.respond_to?(:code) && response.code == 200
     end
 
-    def self.validate(params)
-      params ||= {}
-      GET_VALIDATORS.each { |validate|
-        message = validate[:message][params]
-        raise PnxsError.new(message) unless self.send(validate[:query], params)
-      }
-    end
-
-    def self.has_query?(params)
-      params.include?(:q) && params[:q].instance_of?(Query)
-    end
-
-    def self.only_known_parameters?(params)
-      (params.keys - PARAMETER_KEYS).empty?
-    end
-
     def initialize_fields(response)
-      FIELDS.each do |f|
-        self.class.send(:attr_reader, f)
+      @fields.each do |f|
+        self.class.send(:attr_reader, f.to_sym)
         obj = to_struct(response["#{f}"])
         instance_variable_set("@#{f}", obj)
       end

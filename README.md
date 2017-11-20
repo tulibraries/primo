@@ -6,7 +6,6 @@ canonical and configurable way and to guard against changes and thus create
 dependencies to known stable fields.
 
 ## Installation
-
 Add this line to your application's Gemfile:
 
 ```ruby
@@ -24,38 +23,77 @@ Or install it yourself as:
 ## Usage
 
 ### Configuration
-
-You'll need to configure the Primo gem to ensure you query the appropriate data. To do so in a rails app, create config/initializers/gem.rb with :
+You'll need to configure the Primo gem to ensure you query the appropriate data. To do so in a rails app, create config/initializers/primo.rb with :
 
 ```ruby
 Primo.configure do |config|
-  # You have to set te apikey 
+  # An API Key is required for the hosted environment.
   config.apikey     = 'EXAMPLE_PRIMO_API_KEY'
+
+  # An Institutation value is required for the local environment.
+  config.inst     = 'EXAMPLE_INSTITUTION'
+
   # Primo gem defaults to querying Ex Libris's North American  Api servers. You can override that here.
   config.region   = "https://api-eu.hosted.exlibrisgroup.com
 
   # By dafault advance queries are combined using the :AND logical operator.
   config.operator = :AND
+
+  # By default queries use the :title field
+  config.field = :sub
+
+  # By default queries use the :contains precision
+  config.precision = :exact
+
+  # By default by id queries use the :L context
+  config.context = :PC
+  
+  # By default by the environment is assumed to be :hosted
+  config.context = :local
 end
 ```
-
 Now you can access those configuration attributes with `Primo.configuration.apikey`
 
 ### Making Requests
 
-`Primo::Pnxs::get` takes a hash of attributes as defined in the [Primo PNX REST API](https://developers.exlibrisgroup.com/primo/apis/webservices/rest/pnxs) page and returns the API request result wrapped in an instance of the `Primo::Pnxs` class
+#### Making simple requests
+Simple requests are easy:
+
+* Pass a string and you will query titles containing the string (the default field and precison used are configurable)
+
+```
+Primo.find("otter")
+```
+
+or 
+
+```
+Primo.find_by_id("foobar")
+```
+
+#### Making More advanced requests
+* `Primo.find_by_id` accepts a hash in order to pass in context or other attributes as defined in the [Primo PNX REST API](https://developers.exlibrisgroup.com/primo/apis/webservices/rest/pnxs) docs.
+
+```ruby
+Primo.fin_by_id(id: "foo", context: :PC)
+```
+
+* `Primo.find` also accepts a hash of attributes as defined in the [Primo PNX REST API](https://developers.exlibrisgroup.com/primo/apis/webservices/rest/pnxs) page and returns the API request result wrapped in an instance of the `Primo::Pnxs` class.
+
+`q` is the only required parameter for this hash and it is either composed of a `Primo::Pnxs::Query` object, or a hash that is converted into a `Primo::Pnxs::Query` object.
 
 ```ruby
   # q is an instance of Primo::Pnxs::Query, see the next section for details.
-  pnxs = Primo::Pnxs::get q: q
+  # defaults for :field and :precision are added if not included in the hash.
+  response = Primo.find q: { field: sub:, precision: :contains, value: "goats" }
 
-  pnxs.docs.first.date
-  pnxs.info
-  pnxs.facets
+  response.docs.first.date
+  response.info
+  response.facets
   # ...
 ```
 
-#### Generating a Query object
+#### (Advanced) Generating a Query object
 ```ruby
 query = Primo::Pnxs::Query.new(
     precision: :exact,
@@ -65,7 +103,7 @@ query = Primo::Pnxs::Query.new(
 ```
 This API wrapper validates the `query` object according the specifications documented in [the Ex Libris Api docs](https://developers.exlibrisgroup.com/primo/apis/webservices/xservices/search/briefsearch) for the `query` field.
 
-#### Generating an advanced query with advanced operators
+#### Generating advanced queries with advanced operators
 ```ruby
 query = Primo::Pnxs::Query.new(
     precision: :exact,
@@ -76,23 +114,24 @@ query = Primo::Pnxs::Query.new(
 query.and( field: :title, precision: :contains, value: "foo")
 query.or( field: :title, precision: :contains, value: "foo")
 query.not( field: :title, precision: :contains, value: "foo")
+```
 
+#### Generating an advanced query with the `#build` method:
+```ruby
 q1 = field: :title, precision: :contains, value: "foo"
 q1 = field: :title, precision: :contains, value: "bar"
 Primo::Pnxs::Query::build([q1, q2])
 ```
-This API wrapper validates the `query` object according the specifications documented in [the Ex Libris Api docs](https://developers.exlibrisgroup.com/primo/apis/webservices/xservices/search/briefsearch) for the `query` field.
-## Development
 
+This API wrapper validates the `query` object according the specifications documented in [the Ex Libris Api docs](https://developers.exlibrisgroup.com/primo/apis/webservices/xservices/search/briefsearch) for the `query` field.
+
+## Development
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
 ## Contributing
-
 Bug reports and pull requests are welcome on GitHub at https://github.com/tulibraries/primo. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
-
 ## License
-
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).

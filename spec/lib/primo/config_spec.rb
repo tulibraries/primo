@@ -12,7 +12,13 @@ describe "Configuring Primo" do
 
     it "uses default values" do
       expect(Primo.configuration.apikey).to eql "TEST_API_KEY"
+      expect(Primo.configuration.inst).to eql "TEST_INSTITUTE_KEY"
+      expect(Primo.configuration.region).to eql "https://api-na.hosted.exlibrisgroup.com"
       expect(Primo.configuration.operator).to eql :AND
+      expect(Primo.configuration.field).to eql :title
+      expect(Primo.configuration.precision).to eql :contains
+      expect(Primo.configuration.context).to eql :L
+      expect(Primo.configuration.environment).to eql :hosted
     end
 
     after(:all) do
@@ -38,7 +44,5 @@ describe "Configuring Primo" do
     after(:all) do
       Primo.configuration = nil
     end
-
-
   end
 end

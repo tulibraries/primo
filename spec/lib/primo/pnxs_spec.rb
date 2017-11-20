@@ -110,6 +110,11 @@ RSpec.describe Primo::Pnxs do
     expect(pnxs.beaconO22).not_to be_nil
   end
 
+  it "docs should respond to fields" do
+    expect(pnxs.docs.first.date).to eq("1995")
+    expect(pnxs.docs.first["date"]).to eq("1995")
+  end
+
   context "getting 400 response from server" do
     let(:pnxs) {
 

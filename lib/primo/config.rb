@@ -11,12 +11,18 @@ module Primo
   end
 
   class Configuration
-    attr_accessor :apikey, :region, :operator
+    attr_accessor :apikey, :region, :operator, :field, :precision
+    attr_accessor :context, :environment, :inst
 
     def initialize
       @apikey = "TEST_API_KEY"
+      @inst = "TEST_INSTITUTE_KEY"
       @region = "https://api-na.hosted.exlibrisgroup.com"
       @operator = :AND
+      @field = :title
+      @precision = :contains
+      @context = :L
+      @environment = :hosted
     end
   end
 end
