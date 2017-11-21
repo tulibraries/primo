@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "httparty"
+require "forwardable"
 
 module Primo
   # Encapsolates the Primo PNXS REST API
@@ -22,14 +23,24 @@ module Primo
 
     include HTTParty
     include ParameterValidator
+    include Enumerable
+    extend Forwardable
+
+    def_delegators :@response, :each, :<<
+
+    attr_reader :response, :fields
 
     def initialize(response)
       validate response
-      # object attribute readers that begin with @ throw an error.
       @response = response
+      # object attribute readers that begin with @ throw an error.
       @fields = response.keys
-        .select { |f| !f.match(/^@/) }
+        .map { |k| k.gsub(/^@/, "_") }
       initialize_fields response
+    end
+
+    def [](x)
+      self.send(x)
     end
 
     # Overrides HTTParty::get in order to add some custom validations.
@@ -170,8 +181,8 @@ module Primo
 
     def initialize_fields(response)
       @fields.each do |f|
-        self.class.send(:attr_reader, f.to_sym)
-        obj = to_struct(response["#{f}"])
+        self.class.send(:attr_reader, f)
+        obj = to_struct(response["#{f.gsub(/^_/, "@")}"])
         instance_variable_set("@#{f}", obj)
       end
     end

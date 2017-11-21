@@ -81,7 +81,7 @@ end
 RSpec.describe "Primo.find_by_id" do
   before(:all) do
     VCR.insert_cassette "primo_pnxs_get_record"
-    Primo.configure
+    Primo.configure {}
   end
 
   after(:all) do
