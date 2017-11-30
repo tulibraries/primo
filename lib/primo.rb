@@ -3,7 +3,6 @@
 require "primo/version"
 require "primo/config"
 require "primo/pnxs"
-require "primo/pnxs_by_id"
 require "primo/query"
 
 module Primo
