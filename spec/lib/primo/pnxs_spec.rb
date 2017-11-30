@@ -62,6 +62,13 @@ RSpec.describe "#{Primo::Pnxs}#get" do
     it "should return an instance of Pnxs" do
       expect(Primo::Pnxs::get(options)).to be_an_instance_of(Primo::Pnxs)
     end
+
+    it "adds the apikey to the query" do
+      method = Primo::Pnxs.send(:get_method, options)
+      expect(method.params).to have_key(:apikey)
+      expect(method.params).to have_value("TEST_API_KEY")
+    end
+
   end
 end
 
