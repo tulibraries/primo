@@ -79,7 +79,6 @@ module Primo
       end
 
       def params
-        auth = {}
         @params.merge(auth)
           .merge q: @params[:q].to_s
       end
