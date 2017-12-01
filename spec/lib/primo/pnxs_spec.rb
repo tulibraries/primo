@@ -62,6 +62,13 @@ RSpec.describe "#{Primo::Pnxs}#get" do
     it "should return an instance of Pnxs" do
       expect(Primo::Pnxs::get(options)).to be_an_instance_of(Primo::Pnxs)
     end
+
+    it "adds the apikey to the query" do
+      method = Primo::Pnxs.send(:get_method, options)
+      expect(method.params).to have_key(:apikey)
+      expect(method.params).to have_value("TEST_API_KEY")
+    end
+
   end
 end
 
@@ -108,6 +115,11 @@ RSpec.describe Primo::Pnxs do
 
   it "should respond to :beaconO22 with non nil" do
     expect(pnxs.beaconO22).not_to be_nil
+  end
+
+  it "docs should respond to fields" do
+    expect(pnxs.docs.first.date).to eq("1995")
+    expect(pnxs.docs.first["date"]).to eq("1995")
   end
 
   context "getting 400 response from server" do
