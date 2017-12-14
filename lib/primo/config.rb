@@ -19,7 +19,7 @@ module Primo
       @inst = "TEST_INSTITUTE_KEY"
       @region = "https://api-na.hosted.exlibrisgroup.com"
       @operator = :AND
-      @field = :title
+      @field = :any
       @precision = :contains
       @context = :L
       @environment = :hosted
