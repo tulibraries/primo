@@ -74,7 +74,7 @@ class Primo::Pnxs::Query
   end
 
   private
-    REQUIRED_PARAMS = [ :field, :precision, :value ]
+    REQUIRED_PARAMS = [ :field, :value ]
     OPTIONAL_PARAMS = [ :operator ]
     PARAM_ORDER = [ :field, :precision, :value, :operator ]
     OPERATOR_VALUES = [ :AND, :OR, :NOT ]
@@ -108,6 +108,7 @@ class Primo::Pnxs::Query
     def push(params, operator = nil)
       params ||= {}
       operator = operator || params[:operator] || Primo.configuration.operator
+      params[:precision] ||= Primo.configuration.precision
       query = @queries.pop
 
       if query

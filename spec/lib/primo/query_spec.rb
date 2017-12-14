@@ -446,16 +446,6 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
   end
 
   #{{{2 :precision
-  context ":precision parameter is missing" do
-    let(:query) { Primo::Pnxs::Query.new(
-      field: :any,
-      value: "foo",
-    ) }
-    it "raises a query error" do
-      expect { query }.to raise_error(Primo::Pnxs::Query::QueryError)
-    end
-  end
-
   context ":precision parameter is not known" do
     let(:query) { Primo::Pnxs::Query.new(
       field: :any,
