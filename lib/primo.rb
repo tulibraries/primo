@@ -2,8 +2,10 @@
 
 require "primo/version"
 require "primo/config"
+require "primo/parameter_validatable"
 require "primo/pnxs"
 require "primo/query"
+require "primo/facet"
 
 module Primo
   def self.find(options = {})

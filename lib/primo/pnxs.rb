@@ -9,20 +9,9 @@ module Primo
     class PnxsError < ArgumentError
     end
 
-    module ParameterValidator
-      # Generic validation for objects that apply a `validators` interface.
-      def validate(params)
-        validators.each do |validate|
-          message = validate[:message][params]
-          if !send(validate[:query], params)
-            raise PnxsError.new(message)
-          end
-        end
-      end
-    end
 
     include HTTParty
-    include ParameterValidator
+    include Primo::ParameterValidatable
     include Enumerable
     extend Forwardable
 
@@ -52,7 +41,7 @@ module Primo
   private
     # Base class for classes encapsolating Primo REST API methods.
     class PnxsMethod
-      include ParameterValidator
+      include Primo::ParameterValidatable
 
       def initialize(params = {})
         validate(params)
@@ -79,8 +68,11 @@ module Primo
       end
 
       def params
-        @params.merge(auth)
-          .merge q: @params[:q].to_s
+        query = @params[:q]
+        p = @params.merge(auth).merge(q: query.to_s)
+        p.merge!(qInclude: query.include_facets) unless query.include_facets.nil?
+        p.merge!(qExclude: query.exclude_facets) unless query.exclude_facets.nil?
+        p
       end
 
       def self.can_process?(params = {})
