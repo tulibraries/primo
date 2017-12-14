@@ -14,6 +14,8 @@ class Primo::Pnxs::Query
 
   def initialize(params)
     @queries = []
+    @include_facets = []
+    @exclude_facets = []
     push params
   end
 
@@ -42,6 +44,33 @@ class Primo::Pnxs::Query
   def to_s
     @queries.map { |q| transform q }
       .join(";")
+  end
+
+  def facet(params)
+    facet = Primo::Pnxs::Facet.new(params)
+    if facet.operation == :exclude
+      @exclude_facets.push(facet)
+    else
+      @include_facets.push(facet)
+    end
+    # Return the Query object so multiple facet calls can be chained together
+    self
+  end
+
+  def include_facets
+    if @include_facets.empty?
+      nil
+    else
+      @include_facets.map(&:to_s).join("|,|")
+    end
+  end
+
+  def exclude_facets
+    if @exclude_facets.empty?
+      nil
+    else
+      @exclude_facets.map(&:to_s).join("|,|")
+    end
   end
 
   private

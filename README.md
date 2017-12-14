@@ -47,7 +47,7 @@ Primo.configure do |config|
 
   # By default by id queries use the :L context
   config.context = :PC
-  
+
   # By default by the environment is assumed to be :hosted
   config.context = :local
 end
@@ -65,7 +65,7 @@ Simple requests are easy:
 Primo.find("otter")
 ```
 
-or 
+or
 
 ```
 Primo.find_by_id("foobar")
@@ -75,7 +75,7 @@ Primo.find_by_id("foobar")
 * `Primo.find_by_id` accepts a hash in order to pass in context or other attributes as defined in the [Primo PNX REST API](https://developers.exlibrisgroup.com/primo/apis/webservices/rest/pnxs) docs.
 
 ```ruby
-Primo.fin_by_id(id: "foo", context: :PC)
+Primo.find_by_id(id: "foo", context: :PC)
 ```
 
 * `Primo.find` also accepts a hash of attributes as defined in the [Primo PNX REST API](https://developers.exlibrisgroup.com/primo/apis/webservices/rest/pnxs) page and returns the API request result wrapped in an instance of the `Primo::Pnxs` class.
@@ -103,6 +103,48 @@ query = Primo::Pnxs::Query.new(
 ```
 This API wrapper validates the `query` object according the specifications documented in [the Ex Libris Api docs](https://developers.exlibrisgroup.com/primo/apis/webservices/xservices/search/briefsearch) for the `query` field.
 
+#### (Advanced) Adding Facets to a query
+
+Once you have your base query, you can add facet queries to limit the search
+
+```ruby
+query = Primo::Pnxs::Query.new(...)
+
+query.facet(
+  { field: "creator",
+    value: "Williams, John",
+    })
+
+response = Primo.find(q: query)    
+```
+
+##### Exclude Facets
+
+By default, facets are *include facets*, so that records returned should include the value
+in the field. You can also set *exclude facets* for results that should not contain a value
+in a given field, by setting the `operator` parameter to `:exclude`
+
+```ruby
+query.facet(
+  { field: "creator",
+    value: "Williams, John",
+    operator: :exclude
+    })
+
+```
+##### Multiple Facets
+
+You can also call facet multiple times to apply multiple facets
+```ruby
+query.facet({
+  field: "creator",
+  value: "Williams, John",
+}).facet({
+    field: "format",
+    value: "Book"
+    })
+
+      
 #### Generating advanced queries with advanced operators
 ```ruby
 query = Primo::Pnxs::Query.new(

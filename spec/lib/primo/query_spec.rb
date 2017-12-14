@@ -512,4 +512,73 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
       expect(query.to_s).to include("A B C")
     end
   end
+
+  describe "#{Primo::Pnxs::Query}#facet"  do
+    let(:query) {
+      Primo.configure {}
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+      ) }
+    context "given a valid facet params" do
+      let(:facet) { {
+        precision: :exact,
+        operation: :include,
+        field: "creator",
+        value: "bar"
+      } }
+      it "transforms to an expected string" do
+        expect(query.facet(facet).include_facets).to eq("facet_creator,exact,bar")
+      end
+    end
+    context "given a valid exlude facet params" do
+      let(:facet) { {
+        precision: :exact,
+        operation: :exclude,
+        field: "creator",
+        value: "bar"
+      } }
+      it "transforms to an expected string" do
+        expect(query.facet(facet).exclude_facets).to eq("facet_creator,exact,bar")
+      end
+    end
+    context "given a multiple facets" do
+      let(:facet1) { {
+        precision: :exact,
+        operation: :include,
+        field: "creator",
+        value: "bar"
+      } }
+      let(:facet2) { {
+        precision: :exact,
+        operation: :include,
+        field: "format",
+        value: "foo"
+      } }
+      it "transforms to an expected string" do
+        expect(query.facet(facet1).facet(facet2).include_facets).to eq("facet_creator,exact,bar|,|facet_format,exact,foo")
+      end
+    end
+    context "given an include and exclude facet" do
+      let(:facet1) { {
+        precision: :exact,
+        operation: :exclude,
+        field: "creator",
+        value: "bar"
+      } }
+      let(:facet2) { {
+        precision: :exact,
+        operation: :include,
+        field: "format",
+        value: "foo"
+      } }
+      it "correctly asigns include and exclude facets" do
+        query.facet(facet1).facet(facet2)
+        expect(query.include_facets).to eq("facet_format,exact,foo")
+        expect(query.exclude_facets).to eq("facet_creator,exact,bar")
+      end
+    end
+
+  end
 end
