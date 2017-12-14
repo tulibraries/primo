@@ -15,7 +15,7 @@ describe "Configuring Primo" do
       expect(Primo.configuration.inst).to eql "TEST_INSTITUTE_KEY"
       expect(Primo.configuration.region).to eql "https://api-na.hosted.exlibrisgroup.com"
       expect(Primo.configuration.operator).to eql :AND
-      expect(Primo.configuration.field).to eql :title
+      expect(Primo.configuration.field).to eql :any
       expect(Primo.configuration.precision).to eql :contains
       expect(Primo.configuration.context).to eql :L
       expect(Primo.configuration.environment).to eql :hosted
