@@ -69,10 +69,8 @@ module Primo
 
       def params
         query = @params[:q]
-        p = @params.merge(auth).merge(q: query.to_s)
-        p.merge!(qInclude: query.include_facets) unless query.include_facets.nil?
-        p.merge!(qExclude: query.exclude_facets) unless query.exclude_facets.nil?
-        p
+        @params.merge(auth)
+          .merge(query.to_h)
       end
 
       def self.can_process?(params = {})

@@ -46,6 +46,16 @@ class Primo::Pnxs::Query
       .join(";")
   end
 
+  def to_h
+    {
+      q: to_s,
+      qInclude: include_facets,
+      qExclude: exclude_facets,
+    }
+      .select { |k, v| !v.nil? }
+      .to_h
+  end
+
   def facet(params)
     facet = Primo::Pnxs::Facet.new(params)
     if facet.operation == :exclude
@@ -58,17 +68,13 @@ class Primo::Pnxs::Query
   end
 
   def include_facets
-    if @include_facets.empty?
-      nil
-    else
+    if !@include_facets.empty?
       @include_facets.map(&:to_s).join("|,|")
     end
   end
 
   def exclude_facets
-    if @exclude_facets.empty?
-      nil
-    else
+    if !@exclude_facets.empty?
       @exclude_facets.map(&:to_s).join("|,|")
     end
   end
