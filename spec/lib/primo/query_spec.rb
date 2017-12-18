@@ -209,7 +209,7 @@ describe "#{Primo::Pnxs::Query}#or"  do
   end
 end
 
-describe "#{Primo::Pnxs::Query}#and"  do
+describe "#{Primo::Pnxs::Query}#not"  do
   context "add nil as the second query" do
     let(:query) {
       Primo.configure {}
@@ -512,6 +512,65 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
       expect(query.to_s).to include("A B C")
     end
   end
+
+  describe "#{Primo::Pnxs::Query}#to_h" do
+    let(:query) {
+      Primo.configure {}
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+      ) }
+    let(:facet1) { {
+      precision: :exact,
+      operation: :exclude,
+      field: "creator",
+      value: "bar"
+    } }
+    let(:facet2) { {
+      precision: :exact,
+      field: "format",
+      value: "foo"
+    } }
+
+    context "simple query with no facets" do
+      it "has one value" do
+        expect(query.to_h.size).to eq(1)
+      end
+
+      it "has a :q key" do
+        expect(query.to_h).to have_key(:q)
+      end
+    end
+
+    context "simple query with exclude facet" do
+      it "has two values" do
+        query.facet(facet1)
+        expect(query.to_h.size).to eq(2)
+      end
+
+      it "has a :qInclude key" do
+        query.facet(facet1)
+        expect(query.to_h).to have_key(:qExclude)
+      end
+    end
+
+    context "simple query with include facet" do
+      it "has a :qInclude key" do
+        query.facet(facet2)
+        expect(query.to_h).to have_key(:qInclude)
+      end
+    end
+
+    context "simple query with include and exclude facets" do
+      it "has 3 values" do
+        query.facet(facet1).facet(facet2)
+        expect(query.to_h.size).to eq(3)
+      end
+    end
+
+  end
+
 
   describe "#{Primo::Pnxs::Query}#facet"  do
     let(:query) {
