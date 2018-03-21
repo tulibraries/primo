@@ -11,13 +11,13 @@ module Primo
   def self.find(options = {})
     options ||= {}
 
-    if options.instance_of? String
+    if options.is_a? String
       params = find_defaults(value: options)
       query = Primo::Pnxs::Query.new params
       return find(q: query)
     end
 
-    if  options.fetch(:q, {}).instance_of? Hash
+    if  options.fetch(:q, {}).is_a? Hash
       query = Primo::Pnxs::Query.new(find_defaults options[:q])
       return find(options.merge(q: query))
     end
@@ -28,7 +28,7 @@ module Primo
   def self.find_by_id(params = {})
     params ||= {}
 
-    if params.instance_of? String
+    if params.is_a? String
       return find_by_id(id: params)
     end
 

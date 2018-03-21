@@ -113,8 +113,11 @@ class Primo::Pnxs::Query
 
     def push(params, operator = nil)
       params ||= {}
+      params = params.map { |k, v| [k.to_sym, v] }.to_h
+
       operator = operator || params[:operator] || Primo.configuration.operator
       params[:precision] ||= Primo.configuration.precision
+
       query = @queries.pop
 
       if query
@@ -138,40 +141,42 @@ class Primo::Pnxs::Query
     end
 
     def field_is_known?(params)
-      field = params.fetch(:field)
+      field = params[:field].to_sym
       REGULAR_FIELDS.include?(field) || FACET_FIELDS.include?(field)
     end
 
     def operator_is_known?(params)
-      operator = params.fetch(:operator, "")
-      operator.empty? || OPERATOR_VALUES.include?(operator)
+      operator = params[:operator]
+      operator.nil? || OPERATOR_VALUES.include?(operator.to_sym)
     end
 
     def precision_is_known?(params)
-      precision = params.fetch(:precision)
+      precision = params[:precision].to_sym
       PRECISION_VALUES.include?(precision)
     end
 
     def facet_precision_is_exact?(params)
-      precision = params.fetch(:precision)
-      field = params.fetch(:field)
+      precision = params[:precision].to_sym
+      field = params[:field].to_sym
       REGULAR_FIELDS.include?(field) ||
         FACET_FIELDS.include?(field) && precision == :exact
     end
 
     def transform(query)
       PARAM_ORDER.map { |p|
+        v = query[p]
+
         if self.respond_to?(p, true)
-          self.send(p, query[p])
+          self.send(p, v)
         else
-          query[p]
+          v
         end
 
       }.join(",")
     end
 
     def value(value)
-      value.tr(",", " ")
+      value.to_s.tr(",", " ")
     end
 
     def operator(value)

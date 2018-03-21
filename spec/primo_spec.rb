@@ -57,6 +57,20 @@ RSpec.describe "Primo.find" do
     end
   end
 
+  context "when we pass options with valid q hash" do
+    let(:query) {
+      Primo::Pnxs::Query.new(
+        "precision" =>  "contains",
+        "field" => "title",
+        "value" =>  "otter",
+        "opterator" => "OR",
+      )
+    }
+    it "does not raise a query error" do
+      expect { Primo.find q: query }.not_to raise_error
+    end
+  end
+
   context "when we pass options with valid q Query instance" do
     let(:query) {
       { precision: :contains,
