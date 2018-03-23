@@ -90,6 +90,14 @@ RSpec.describe "Primo.find" do
       expect { Primo.find query }.not_to raise_error
     end
   end
+
+  context "when we pass object with id" do
+    let(:query) {  { id: "foo" } }
+
+    it "does not raise a query error" do
+      expect { Primo.find query }.not_to raise_error
+    end
+  end
 end
 
 RSpec.describe "Primo.find_by_id" do
