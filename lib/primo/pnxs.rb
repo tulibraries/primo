@@ -68,7 +68,7 @@ module Primo
       end
 
       def params
-        query = @params[:q]
+        query = @params[:q] || @params["q"]
         @params.merge(auth)
           .merge(query.to_h)
       end
@@ -89,16 +89,16 @@ module Primo
           [{ query: :has_valid_query?,
             message: lambda { |p| "field :q must be a valid instance of Primo::Pnxs::Query " } },
           { query: :only_known_parameters?,
-            message: lambda { |p| "field :q is required " } },
+            message: lambda { |p| "only known parameters can be passed " } },
           ]
         end
 
         def has_valid_query?(params)
-          params[:q].instance_of?(Primo::Pnxs::Query)
+          params[:q].is_a?(Primo::Pnxs::Query)
         end
 
         def only_known_parameters?(params)
-          (params.keys - PARAMETER_KEYS).empty?
+          (params.keys - PARAMETER_KEYS - PARAMETER_KEYS.map(&:to_s)).empty?
         end
     end
 
@@ -129,12 +129,14 @@ module Primo
         def validators
           [
           { query: :only_known_parameters?,
-            message: lambda { |p| "field :q is required " } },
+            message: lambda { |p| "only known parameters are passed " } },
           ]
         end
 
         def only_known_parameters?(params)
-          (params.keys - PARAMETER_KEYS - URL_KEYS).empty?
+          keys = (PARAMETER_KEYS + URL_KEYS)
+          string_keys = keys.map(&:to_s)
+          (params.keys - keys - string_keys).empty?
         end
     end
 
@@ -178,9 +180,9 @@ module Primo
 
     # Allows us to access returned data using dot notation.
     def to_struct(obj)
-      if obj.instance_of? Hash
+      if obj.is_a? Hash
         OpenStruct.new obj
-      elsif obj.instance_of? Array
+      elsif obj.is_a? Array
         obj.map { |o| to_struct o }
       else
         obj

@@ -8,7 +8,7 @@ describe "#{Primo::Pnxs::Query} simple query"  do
       Primo.configure {}
       Primo::Pnxs::Query.new(
         precision: :exact,
-        field: :facet_local23,
+        "field" => :facet_local23,
         value: "bar",
       ) }
     it "transforms to an expected string" do
@@ -20,10 +20,10 @@ describe "#{Primo::Pnxs::Query} simple query"  do
     let(:query) {
       Primo.configure {}
       Primo::Pnxs::Query.new(
-        precision: :exact,
-        field: :facet_local23,
-        value: "bar",
-        operator: :OR,
+        "precision" => :exact,
+        "field" =>  :facet_local23,
+        "value" => "bar",
+        "operator" => :OR,
       ) }
     it "transforms to an expected string" do
       expect(query.to_s).to eq("facet_local23,exact,bar,OR")

@@ -143,6 +143,7 @@ query.facet({
     field: "format",
     value: "Book"
     })
+```
 
       
 #### Generating advanced queries with advanced operators
