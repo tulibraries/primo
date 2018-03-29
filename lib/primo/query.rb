@@ -141,7 +141,7 @@ class Primo::Pnxs::Query
     end
 
     def field_is_known?(params)
-      field = params[:field].to_sym
+      field = params.fetch(:field, :missing_field).to_sym
       REGULAR_FIELDS.include?(field) || FACET_FIELDS.include?(field)
     end
 
