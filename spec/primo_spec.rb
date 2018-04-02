@@ -33,13 +33,13 @@ RSpec.describe "Primo.find" do
 
   context "when we pass it nil" do
     it "raises a query error" do
-      expect { Primo.find }.to raise_error Primo::Pnxs::Query::QueryError
+      expect { Primo.find }.to raise_error Primo::Pnxs::PnxsError
     end
   end
 
   context "when we pass an empty set of options" do
     it "raises a query error" do
-      expect { Primo.find }.to raise_error Primo::Pnxs::Query::QueryError
+      expect { Primo.find }.to raise_error Primo::Pnxs::PnxsError
     end
   end
 

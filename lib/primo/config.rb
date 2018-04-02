@@ -12,7 +12,7 @@ module Primo
 
   class Configuration
     attr_accessor :apikey, :region, :operator, :field, :precision
-    attr_accessor :context, :environment, :inst
+    attr_accessor :context, :environment, :inst, :vid, :scope
 
     def initialize
       @apikey = "TEST_API_KEY"
