@@ -19,6 +19,8 @@ describe "Configuring Primo" do
       expect(Primo.configuration.precision).to eql :contains
       expect(Primo.configuration.context).to eql :L
       expect(Primo.configuration.environment).to eql :hosted
+      expect(Primo.configuration.vid).to eql nil
+      expect(Primo.configuration.scope).to eql nil
     end
 
     after(:all) do
@@ -33,12 +35,22 @@ describe "Configuring Primo" do
       end
     end
 
-    it "default value for that attribute is overridden" do
+    it "overrides value for attribute if overridden" do
       expect(Primo.configuration.apikey).to eql "SOME_OTHER_API_KEY"
     end
 
-    it "still sets the default value for attributes not overriden" do
+    it "sets the default value for attributes not overriden" do
       expect(Primo.configuration.region).to eql "https://api-na.hosted.exlibrisgroup.com"
+    end
+
+    it "is possible to override vid and scope" do
+      Primo.configure do |config|
+        config.vid =  :default_vid
+        config.scope = :default_scope
+      end
+
+      expect(Primo.configuration.vid).to eql :default_vid
+      expect(Primo.configuration.scope).to eql :default_scope
     end
 
     after(:all) do

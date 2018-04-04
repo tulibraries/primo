@@ -17,11 +17,7 @@ module Primo
       return find(q: query)
     end
 
-    if options.fetch(:id, nil)
-      return find_by_id(options)
-    end
-
-    if  options.fetch(:q, {}).is_a? Hash
+    if  options.fetch(:q, nil).is_a? Hash
       query = Primo::Pnxs::Query.new(find_defaults options[:q])
       return find(options.merge(q: query))
     end
@@ -41,6 +37,7 @@ module Primo
 
   private
 
+    # TODO: Move these defaults to query methods.
     def self.find_defaults(params)
       params ||= {}
       field = params[:field] || Primo.configuration.field

@@ -58,6 +58,18 @@ module Primo
           auths[env]
         end
 
+        def vid_scope
+          vid = Primo.configuration.vid
+          scope = Primo.configuration.scope
+
+          if (vid && scope) || (vid.nil? && scope.nil?)
+            { vid: vid, scope: scope }
+          else
+            error = "Both or neither of :vid or :scope must be configured"
+            throw Primo::Pnxs::PnxsError.new error
+          end
+        end
+
         RESOURCE = "/primo/v1/pnxs"
     end
 
@@ -70,6 +82,7 @@ module Primo
       def params
         query = @params[:q] || @params["q"]
         @params.merge(auth)
+          .merge(vid_scope)
           .merge(query.to_h)
       end
 
@@ -87,7 +100,7 @@ module Primo
 
         def validators
           [{ query: :has_valid_query?,
-            message: lambda { |p| "field :q must be a valid instance of Primo::Pnxs::Query " } },
+             message: lambda { |p| "field :q must be a valid instance of Primo::Pnxs::Query " } },
           { query: :only_known_parameters?,
             message: lambda { |p| "only known parameters can be passed " } },
           ]
