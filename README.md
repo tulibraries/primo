@@ -48,8 +48,14 @@ Primo.configure do |config|
   # By default by id queries use the :L context
   config.context = :PC
 
-  # By default by the environment is assumed to be :hosted
-  config.context = :local
+  # By default the environment is assumed to be :hosted
+  config.environment = :local
+  
+  # By default vid will be nil
+  config.vid = "MYVID"
+  
+  # By default scope will be nil
+  config.scope = "pci_scope"
 end
 ```
 Now you can access those configuration attributes with `Primo.configuration.apikey`
