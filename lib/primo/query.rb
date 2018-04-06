@@ -116,6 +116,7 @@ class Primo::Pnxs::Query
       params = params.map { |k, v| [k.to_sym, v] }.to_h
 
       operator = operator || params[:operator] || Primo.configuration.operator
+      params[:field] ||= Primo.configuration.field
       params[:precision] ||= Primo.configuration.precision
 
       query = @queries.pop
@@ -182,4 +183,5 @@ class Primo::Pnxs::Query
     def operator(value)
       value || Primo.configuration.operator
     end
+
 end
