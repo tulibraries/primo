@@ -393,8 +393,8 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
       precision: "contains",
       value: "foo"
     ) }
-    it "raises a query error" do
-      expect { query }.to raise_error(Primo::Pnxs::Query::QueryError)
+    it "Uses the default field if not provided" do
+      expect { query }.to_not raise_error(Primo::Pnxs::Query::QueryError)
     end
   end
 

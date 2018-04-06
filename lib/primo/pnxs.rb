@@ -119,7 +119,7 @@ module Primo
     # URL and Parameters.
     class RecordMethod < PnxsMethod
       def url
-        context = @params[:context]
+        context = @params[:context] || Primo.configuration.context
         id = @params[:id]
         Primo.configuration.region + RESOURCE + "/#{context}/#{id}"
       end

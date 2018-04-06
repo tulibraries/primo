@@ -12,13 +12,12 @@ module Primo
     options ||= {}
 
     if options.is_a? String
-      params = find_defaults(value: options)
-      query = Primo::Pnxs::Query.new params
+      query = Primo::Pnxs::Query.new(value: options)
       return find(q: query)
     end
 
     if  options.fetch(:q, nil).is_a? Hash
-      query = Primo::Pnxs::Query.new(find_defaults options[:q])
+      query = Primo::Pnxs::Query.new(options[:q])
       return find(options.merge(q: query))
     end
 
@@ -32,22 +31,6 @@ module Primo
       return find_by_id(id: params)
     end
 
-    Primo::Pnxs::get(id_defaults(params))
+    Primo::Pnxs::get(params)
   end
-
-  private
-
-    # TODO: Move these defaults to query methods.
-    def self.find_defaults(params)
-      params ||= {}
-      field = params[:field] || Primo.configuration.field
-      precision = params[:precision] || Primo.configuration.precision
-      params.merge(field: field, precision: precision)
-    end
-
-    def self.id_defaults(params)
-      params ||= {}
-      context = params[:context] || Primo.configuration.context
-      params.merge(context: context)
-    end
 end
