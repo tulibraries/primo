@@ -94,7 +94,7 @@ class Primo::Pnxs::Query
     FACET_FIELDS = %i(
       facet_creator facet_lang facet_rtype facet_pfilter facet_topic
       facet_creationdate facet_dcc facet_lcc facet_rvk
-      facet_tlevelfacet_domain facet_fsize facet_fmt facet_frbrgroupid
+      facet_tlevel facet_domain facet_fsize facet_fmt facet_frbrgroupid
       facet_frbrtype facet_local1 facet_local50
     ) + (1..50).to_a.map { |i| "facet_local#{i}".to_sym }
 
