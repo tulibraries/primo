@@ -98,6 +98,15 @@ RSpec.describe "Primo.find" do
       expect { Primo.find query }.not_to raise_error
     end
   end
+
+  context "when value is an array" do
+    let(:query) { { q: { value: [] } } }
+
+    it "builds the query using the Primo::Pnxs::Query.build method" do
+      expect(Primo::Pnxs::Query).to receive(:build).with([])
+      begin Primo.find(query) rescue nil end
+    end
+  end
 end
 
 RSpec.describe "Primo.find_by_id" do
