@@ -16,8 +16,14 @@ module Primo
       return find(q: query)
     end
 
-    if  options.fetch(:q, nil).is_a? Hash
-      query = Primo::Pnxs::Query.new(options[:q])
+    if  options[:q]&.is_a? Hash
+      if options[:q][:value]&.is_a? Array
+        queries = options[:q][:value]
+        query = Primo::Pnxs::Query.build(queries)
+      else
+        query = Primo::Pnxs::Query.new(options[:q])
+      end
+
       return find(options.merge(q: query))
     end
 
@@ -31,6 +37,6 @@ module Primo
       return find_by_id(id: params)
     end
 
-    Primo::Pnxs::get(params)
+    find(params)
   end
 end
