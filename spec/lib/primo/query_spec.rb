@@ -342,15 +342,21 @@ describe "#{Primo::Pnxs::Query}::build" do
     let(:query) { {
       precision: :contains,
       field: :title,
+      value: "foo",
+      operator: :NOT,
+    } }
+    let(:query_2) { {
+      precision: :contains,
+      field: :title,
       value: "bar",
-      operator: :OR,
+      operator: :AND,
     } }
     it "it returns a Query" do
-      expect(Primo::Pnxs::Query::build([query, query, query])).to be_an_instance_of(Primo::Pnxs::Query)
+      expect(Primo::Pnxs::Query::build([query, query, query_2])).to be_an_instance_of(Primo::Pnxs::Query)
     end
 
     it "transforms to an expected string" do
-      expect(Primo::Pnxs::Query::build([query, query]).to_s).to eq("title,contains,bar,OR;title,contains,bar,OR")
+      expect(Primo::Pnxs::Query::build([query, query_2]).to_s).to eq("title,contains,foo,NOT;title,contains,bar,AND")
     end
   end
 
