@@ -33,7 +33,7 @@ class Primo::Pnxs::Query
 
   def self.build(queries)
     queries ||= []
-    first_query = queries.pop
+    first_query = queries.shift
     query = new(first_query)
     queries.each { |q|
       query.send(:push, q)
@@ -111,18 +111,19 @@ class Primo::Pnxs::Query
           message: lambda { |p| "Attempt to use non exact precision with facet field: #{p[:precision]}" } },
       ]
 
-    def push(params, operator = nil)
+    def push(params, op_overrider = nil)
       params ||= {}
       params = params.map { |k, v| [k.to_sym, v] }.to_h
 
-      operator = operator || params[:operator] || Primo.configuration.operator
+      params[:operator] ||= Primo.configuration.operator
       params[:field] ||= Primo.configuration.field
       params[:precision] ||= Primo.configuration.precision
 
       query = @queries.pop
 
       if query
-        @queries.push(query.merge(operator: operator))
+        query[:operator] = op_overrider if op_overrider
+        @queries.push(query)
       end
 
       validate(params) && @queries.push(params)
