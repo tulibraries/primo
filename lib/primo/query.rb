@@ -178,11 +178,10 @@ class Primo::Pnxs::Query
     end
 
     def value(value)
-      value.to_s.tr(",", " ")
+      value.to_s.gsub(/(,|;)/, " ")
     end
 
     def operator(value)
       value || Primo.configuration.operator
     end
-
 end

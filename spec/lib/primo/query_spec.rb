@@ -509,6 +509,18 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
     end
   end
 
+  context ":value including semicolons" do
+    let(:query) { Primo::Pnxs::Query.new(
+      field: :any,
+      precision: :contains,
+      value: "A;B;C",
+    ) }
+
+    it "replaces semicolons with spaces" do
+      expect(query.to_s).to include("A B C")
+    end
+  end
+
   describe "#{Primo::Pnxs::Query}#to_h" do
     let(:query) {
       Primo.configure {}
