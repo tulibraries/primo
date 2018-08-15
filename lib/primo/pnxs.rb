@@ -120,7 +120,9 @@ module Primo
     class RecordMethod < PnxsMethod
       def url
         context = @params[:context] || Primo.configuration.context
-        id = URI.encode(URI.decode(@params[:id]))
+        id = URI.decode(@params[:id])
+        id = id.gsub(/#/, "")
+        id = URI.encode(id)
         Primo.configuration.region + RESOURCE + "/#{context}/#{id}"
       end
 
