@@ -76,7 +76,7 @@ module Primo
     # Encapsolates the GET /v1/pnxs Primo REST API Method URL and Parameters.
     class SearchMethod < PnxsMethod
       def url
-        Primo.configuration.region + RESOURCE
+        Primo.configuration.region + "/primo/v1/search"
       end
 
       def params
@@ -95,7 +95,7 @@ module Primo
 
         PARAMETER_KEYS = %i(
           inst q qInclude qExclude lang offset limit sort
-          view addfields vid scope
+          view addfields vid scope apikey
         )
 
         def validators
@@ -137,7 +137,7 @@ module Primo
       private
 
         URL_KEYS = %i(id context)
-        PARAMETER_KEYS = %i( inst lang )
+        PARAMETER_KEYS = %i( inst lang apikey)
 
         def validators
           [
