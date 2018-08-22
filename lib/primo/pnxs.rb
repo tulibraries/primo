@@ -120,8 +120,14 @@ module Primo
     class RecordMethod < PnxsMethod
       def url
         context = @params[:context] || Primo.configuration.context
-        id = CGI.escape(URI.unescape @params[:id])
-        Primo.configuration.region + RESOURCE + "/#{context}/#{id}"
+        id = CGI.unescape(@params[:id])
+        url = Primo.configuration.region + RESOURCE + "/#{context}/#{id}"
+
+        if (URI.parse url rescue false)
+          url
+        else
+          Primo.configuration.region + RESOURCE + "/#{context}/#{CGI.escape(id)}"
+        end
       end
 
       def params
