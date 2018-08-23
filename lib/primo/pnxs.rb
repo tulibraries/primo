@@ -95,7 +95,7 @@ module Primo
 
         PARAMETER_KEYS = %i(
           inst q qInclude qExclude lang offset limit sort
-          view addfields vid scope apikey
+          view addfields vid scope
         )
 
         def validators
@@ -137,7 +137,7 @@ module Primo
       private
 
         URL_KEYS = %i(id context)
-        PARAMETER_KEYS = %i( inst lang apikey)
+        PARAMETER_KEYS = %i( inst lang )
 
         def validators
           [
