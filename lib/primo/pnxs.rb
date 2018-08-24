@@ -84,6 +84,7 @@ module Primo
         @params.merge(auth)
           .merge(vid_scope)
           .merge(query.to_h)
+          .merge(pcAvailability: Primo.configuration.pcavailability)
       end
 
       def self.can_process?(params = {})
