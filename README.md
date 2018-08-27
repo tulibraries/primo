@@ -56,6 +56,9 @@ Primo.configure do |config|
   
   # By default scope will be nil
   config.scope = "pci_scope"
+
+  # By default the pcAvailability is set to false
+  config.pcavailability = false
 end
 ```
 Now you can access those configuration attributes with `Primo.configuration.apikey`

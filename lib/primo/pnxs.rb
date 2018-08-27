@@ -76,7 +76,7 @@ module Primo
     # Encapsolates the GET /v1/pnxs Primo REST API Method URL and Parameters.
     class SearchMethod < PnxsMethod
       def url
-        Primo.configuration.region + RESOURCE
+        Primo.configuration.region + "/primo/v1/search"
       end
 
       def params
@@ -84,6 +84,7 @@ module Primo
         @params.merge(auth)
           .merge(vid_scope)
           .merge(query.to_h)
+          .merge(pcAvailability: Primo.configuration.pcavailability)
       end
 
       def self.can_process?(params = {})

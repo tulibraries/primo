@@ -21,6 +21,7 @@ describe "Configuring Primo" do
       expect(Primo.configuration.environment).to eql :hosted
       expect(Primo.configuration.vid).to eql nil
       expect(Primo.configuration.scope).to eql nil
+      expect(Primo.configuration.pcavailability).to eql false
     end
 
     after(:all) do
