@@ -576,7 +576,6 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
         expect(query.to_h.size).to eq(3)
       end
     end
-
   end
 
 
@@ -644,6 +643,50 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
         query.facet(facet1).facet(facet2)
         expect(query.include_facets).to eq("facet_format,exact,foo")
         expect(query.exclude_facets).to eq("facet_creator,exact,bar")
+      end
+    end
+
+  end
+
+  describe "#{Primo::Pnxs::Query}#date_range_facet"  do
+    let(:query) {
+      Primo.configure {}
+      Primo::Pnxs::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+      ) }
+    context "do not provide min or max" do
+      it "provides defaults min and max" do
+        expect(query.date_range_facet.include_facets).to eq("facet_searchcreationdate,exact,[0 TO 9999]")
+      end
+    end
+
+    context "only provide min" do
+      it "provides default max" do
+        expect(query.date_range_facet(min: 1).include_facets).to eq("facet_searchcreationdate,exact,[1 TO 9999]")
+      end
+    end
+
+    context "only provide max" do
+      it "provides default min" do
+        expect(query.date_range_facet(max: 1).include_facets).to eq("facet_searchcreationdate,exact,[0 TO 1]")
+      end
+    end
+
+    context "only provides min and max" do
+      it "provides default min and max" do
+        expect(query.date_range_facet(min: 1, max: 2).include_facets).to eq("facet_searchcreationdate,exact,[1 TO 2]")
+      end
+    end
+
+    context "provides min, max and operator" do
+      it "provides default min and max" do
+        q = query.date_range_facet(min: 1, max: 2, operation: :exclude)
+        include_facets = q.include_facets
+        exclude_facets = q.exclude_facets
+        expect(include_facets).to be_nil
+        expect(exclude_facets).to eq("facet_searchcreationdate,exact,[1 TO 2]")
       end
     end
 

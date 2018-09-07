@@ -154,6 +154,21 @@ query.facet({
     })
 ```
 
+##### Date Range Facet
+
+You can also add a date range facet (inclusive or execlusive)
+
+```ruby
+query.date_range_facet({
+  min: 1973, # defauls to 0
+  max: 2012, # defaults to 9999
+  operator: :exclude, #defaults inclusive
+}).facet({
+    field: "format",
+    value: "Book"
+    })
+```
+
       
 #### Generating advanced queries with advanced operators
 ```ruby

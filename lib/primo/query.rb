@@ -67,6 +67,11 @@ class Primo::Pnxs::Query
     self
   end
 
+  def date_range_facet(params = {})
+    range = YearRange.new(params[:min], params[:max])
+    facet(params.merge(field: "searchcreationdate", value: "#{range}"))
+  end
+
   def include_facets
     if !@include_facets.empty?
       @include_facets.map(&:to_s).join("|,|")
@@ -183,5 +188,20 @@ class Primo::Pnxs::Query
 
     def operator(value)
       value || Primo.configuration.operator
+    end
+
+    class YearRange
+      attr_reader :min, :max
+
+      def initialize(min = nil, max = nil)
+        @min = min unless "#{min}".match(/^\s*$/)
+        @max = max unless "#{max}".match(/^\s*$/)
+      end
+
+      def to_s
+        min = @min || 0
+        max = @max || 9999
+        "[#{min} TO #{max}]"
+      end
     end
 end
