@@ -194,13 +194,11 @@ class Primo::Pnxs::Query
       attr_reader :min, :max
 
       def initialize(min = nil, max = nil)
-        @min = min unless "#{min}".match(/^\s*$/)
-        @max = max unless "#{max}".match(/^\s*$/)
+        @min = Integer min rescue 0
+        @max = Integer max rescue 9999
       end
 
       def to_s
-        min = @min || 0
-        max = @max || 9999
         "[#{min} TO #{max}]"
       end
     end

@@ -690,5 +690,21 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
       end
     end
 
+    context "min and max are empty strings" do
+      it "provides default min and max" do
+        q = query.date_range_facet(min: "", max: "  ")
+        include_facets = q.include_facets
+        expect(include_facets).to eq("facet_searchcreationdate,exact,[0 TO 9999]")
+      end
+    end
+
+    context "random nonsense years" do
+      it "provides default min and max" do
+        q = query.date_range_facet(min: "foo", max: "bar")
+        include_facets = q.include_facets
+        expect(include_facets).to eq("facet_searchcreationdate,exact,[0 TO 9999]")
+      end
+    end
+
   end
 end
