@@ -9,7 +9,7 @@
 # https://developers.exlibrisgroup.com/primo/apis/webservices/xservices/search/briefsearch
 
 class Primo::Pnxs::Query
-  class QueryError < ArgumentError
+  class QueryError < ::Primo::Pnxs::PnxsError
   end
 
   def initialize(params)

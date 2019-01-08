@@ -301,13 +301,13 @@ end
 describe "#{Primo::Pnxs::Query}::build" do
   context "pass nil as an argument" do
     it "raises an error" do
-      expect { Primo::Pnxs::Query::build(nil) }.to raise_error(ArgumentError)
+      expect { Primo::Pnxs::Query::build(nil) }.to raise_error(::Primo::Pnxs::PnxsError)
     end
   end
 
   context "pass [] as an argument" do
     it "raises an error" do
-      expect { Primo::Pnxs::Query::build([]) }.to raise_error(ArgumentError)
+      expect { Primo::Pnxs::Query::build([]) }.to raise_error(::Primo::Pnxs::PnxsError)
     end
   end
 

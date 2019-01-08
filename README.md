@@ -59,6 +59,9 @@ Primo.configure do |config|
 
   # By default the pcAvailability is set to false
   config.pcavailability = false
+
+  # By default enable_loggagle is set to false
+  config.enable_loggagle = false
 end
 ```
 Now you can access those configuration attributes with `Primo.configuration.apikey`
@@ -191,6 +194,11 @@ Primo::Pnxs::Query::build([q1, q2])
 ```
 
 This API wrapper validates the `query` object according the specifications documented in [the Ex Libris Api docs](https://developers.exlibrisgroup.com/primo/apis/webservices/xservices/search/briefsearch) for the `query` field.
+
+### Logging
+This gem exposes a loggable interface to responses.  Thus a response will respond to `loggable` and return a hash with state values that may be of use to log.
+
+As a bonus, when we enable this feature using the `enable_loggable` configuration, error messages will contain the loggable values and be formatted as JSON.
 
 ## Development
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

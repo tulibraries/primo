@@ -3,6 +3,10 @@
 require "spec_helper"
 
 describe Primo::Pnxs::Facet  do
+  before do
+    Primo.configure
+  end
+
   context "pass minimal parameters" do
     let(:facet) { described_class.new(
       field: "creator",
