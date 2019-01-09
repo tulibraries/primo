@@ -6,9 +6,18 @@ require "forwardable"
 module Primo
   # Encapsolates the Primo PNXS REST API
   class Pnxs
-    class PnxsError < ArgumentError
+    class PnxsError < StandardError
+      def initialize(message, loggable = {})
+        if Primo.configuration.enable_loggable
+          message = loggable.merge(error: message).to_json
+        end
+
+        super message
+      end
     end
 
+    class ArticleNotFound < PnxsError
+    end
 
     include HTTParty
     include Primo::ParameterValidatable
@@ -17,11 +26,16 @@ module Primo
 
     def_delegators :@response, :each, :<<
 
-    attr_reader :response, :fields
+    attr_reader :response, :fields, :loggable
 
-    def initialize(response)
-      validate response
+    def initialize(response, method)
       @response = response
+      @loggable = method.loggable
+
+      validate response
+      # Give the query method a chance to test response.
+      method.validate_response(response)
+
       # object attribute readers that begin with @ throw an error.
       @fields = response.keys
         .map { |k| k.gsub(/^@/, "_") }
@@ -35,7 +49,8 @@ module Primo
     # Overrides HTTParty::get in order to add some custom validations.
     def self.get(params = {})
       method = get_method params
-      new super(method.url, query: method.params)
+      (url, query) = [method.url, method.params]
+      new super(url, query: query), method
     end
 
   private
@@ -46,6 +61,14 @@ module Primo
       def initialize(params = {})
         validate(params)
         @params = params
+      end
+
+      def loggable
+        { url: url, query: @params }
+          .select { |k, v| !v.nil? }
+      end
+
+      def validate_response(response)
       end
 
       protected
@@ -66,7 +89,7 @@ module Primo
             { vid: vid, scope: scope }
           else
             error = "Both or neither of :vid or :scope must be configured"
-            throw Primo::Pnxs::PnxsError.new error
+            throw Primo::Pnxs::PnxsError.new error, loggable
           end
         end
 
@@ -141,6 +164,11 @@ module Primo
         params.include?(:id)
       end
 
+      def validate_response(response)
+        message = "The article for id #{@params[:id]} was not found."
+        raise ArticleNotFound.new(message, loggable) unless response["title"]
+      end
+
       private
 
         URL_KEYS = %i(id context)
@@ -162,8 +190,10 @@ module Primo
 
     # Catch all Method.
     class DefaultMethod < PnxsMethod
+      attr_reader :url
+
       def initialize(params = {})
-        raise PnxsError.new "No method found to process given parameters."
+        raise PnxsError.new "No method found to process given parameters.", loggable
       end
 
       def self.can_process?(params = {})
