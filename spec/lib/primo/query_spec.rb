@@ -2,11 +2,11 @@
 
 require "spec_helper"
 
-describe "#{Primo::Pnxs::Query} simple query"  do
+describe "#{Primo::Search::Query} simple query"  do
   context "pass valid parameters with no logic operator" do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         "field" => :facet_local23,
         value: "bar",
@@ -19,7 +19,7 @@ describe "#{Primo::Pnxs::Query} simple query"  do
   context "pass valid parameters with logic operator" do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         "precision" => :exact,
         "field" =>  :facet_local23,
         "value" => "bar",
@@ -31,25 +31,25 @@ describe "#{Primo::Pnxs::Query} simple query"  do
   end
 end
 
-describe "#{Primo::Pnxs::Query}#and"  do
+describe "#{Primo::Search::Query}#and"  do
   context "add nil as the second query" do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
       ) }
     let(:query_foo) { nil }
     it "raises a query error" do
-      expect { query.and(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query.and(query_foo) }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
   context "add an invalid query as the second query" do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -60,14 +60,14 @@ describe "#{Primo::Pnxs::Query}#and"  do
       value: "bar"
     } }
     it "raises a query error" do
-      expect { query.and(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query.and(query_foo) }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
   context "add a valid query as a second query" do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -85,7 +85,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
   context "add a valid query to query that contains OR operator" do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -104,7 +104,7 @@ describe "#{Primo::Pnxs::Query}#and"  do
   context "add a valid query to query with default OR operator" do
     let(:query) {
       Primo.configure { |c| c.operator = :OR }
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -120,25 +120,25 @@ describe "#{Primo::Pnxs::Query}#and"  do
   end
 end
 
-describe "#{Primo::Pnxs::Query}#or"  do
+describe "#{Primo::Search::Query}#or"  do
   context "add nil as the second query" do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
       ) }
     let(:query_foo) { nil }
     it "raises a query error" do
-      expect { query.or(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query.or(query_foo) }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
   context "add an invalid query as the second query" do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -149,14 +149,14 @@ describe "#{Primo::Pnxs::Query}#or"  do
       value: "bar"
     } }
     it "raises a query error" do
-      expect { query.or(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query.or(query_foo) }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
   context "add a valid query as a second query" do
     let(:query) {
       Primo.configure { |c| c.operator = :AND }
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -174,7 +174,7 @@ describe "#{Primo::Pnxs::Query}#or"  do
   context "add a valid query to query that contains AND operator" do
     let(:query) {
       Primo.configure { |c| c.operator = :AND }
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -193,7 +193,7 @@ describe "#{Primo::Pnxs::Query}#or"  do
   context "add a valid query to query with default NOT operator" do
     let(:query) {
       Primo.configure { |c| c.operator = :NOT }
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -209,25 +209,25 @@ describe "#{Primo::Pnxs::Query}#or"  do
   end
 end
 
-describe "#{Primo::Pnxs::Query}#not"  do
+describe "#{Primo::Search::Query}#not"  do
   context "add nil as the second query" do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
       ) }
     let(:query_foo) { nil }
     it "raises a query error" do
-      expect { query.not(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query.not(query_foo) }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
   context "add an invalid query as the second query" do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -238,14 +238,14 @@ describe "#{Primo::Pnxs::Query}#not"  do
       value: "bar"
     } }
     it "raises a query error" do
-      expect { query.not(query_foo) }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query.not(query_foo) }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
   context "add a valid query as a second query" do
     let(:query) {
       Primo.configure { |c| c.operator = :AND }
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -263,7 +263,7 @@ describe "#{Primo::Pnxs::Query}#not"  do
   context "add a valid query to query that contains AND operator" do
     let(:query) {
       Primo.configure { |c| c.operator = :AND }
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -282,7 +282,7 @@ describe "#{Primo::Pnxs::Query}#not"  do
   context "add a valid query to query with default NOT operator" do
     let(:query) {
       Primo.configure { |c| c.operator = :NOT }
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -298,16 +298,16 @@ describe "#{Primo::Pnxs::Query}#not"  do
   end
 end
 
-describe "#{Primo::Pnxs::Query}::build" do
+describe "#{Primo::Search::Query}::build" do
   context "pass nil as an argument" do
     it "raises an error" do
-      expect { Primo::Pnxs::Query::build(nil) }.to raise_error(::Primo::Pnxs::PnxsError)
+      expect { Primo::Search::Query::build(nil) }.to raise_error(::Primo::Search::SearchError)
     end
   end
 
   context "pass [] as an argument" do
     it "raises an error" do
-      expect { Primo::Pnxs::Query::build([]) }.to raise_error(::Primo::Pnxs::PnxsError)
+      expect { Primo::Search::Query::build([]) }.to raise_error(::Primo::Search::SearchError)
     end
   end
 
@@ -318,7 +318,7 @@ describe "#{Primo::Pnxs::Query}::build" do
       value: "bar"
     } }
     it "raises a query error" do
-      expect { Primo::Pnxs::Query::build([query]) }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { Primo::Search::Query::build([query]) }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
@@ -330,11 +330,11 @@ describe "#{Primo::Pnxs::Query}::build" do
       operator: :OR,
     } }
     it "it returns a Query" do
-      expect(Primo::Pnxs::Query::build([query])).to be_an_instance_of(Primo::Pnxs::Query)
+      expect(Primo::Search::Query::build([query])).to be_an_instance_of(Primo::Search::Query)
     end
 
     it "transforms to an expected string" do
-      expect(Primo::Pnxs::Query::build([query]).to_s).to eq("title,contains,bar,OR")
+      expect(Primo::Search::Query::build([query]).to_s).to eq("title,contains,bar,OR")
     end
   end
 
@@ -352,11 +352,11 @@ describe "#{Primo::Pnxs::Query}::build" do
       operator: :AND,
     } }
     it "it returns a Query" do
-      expect(Primo::Pnxs::Query::build([query, query, query_2])).to be_an_instance_of(Primo::Pnxs::Query)
+      expect(Primo::Search::Query::build([query, query, query_2])).to be_an_instance_of(Primo::Search::Query)
     end
 
     it "transforms to an expected string" do
-      expect(Primo::Pnxs::Query::build([query, query_2]).to_s).to eq("title,contains,foo,NOT;title,contains,bar,AND")
+      expect(Primo::Search::Query::build([query, query_2]).to_s).to eq("title,contains,foo,NOT;title,contains,bar,AND")
     end
   end
 
@@ -368,55 +368,55 @@ describe "#{Primo::Pnxs::Query}::build" do
       operator: :OR,
     } }
     it "it raises a query error" do
-      expect { Primo::Pnxs::Query::build([query, nil]) }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { Primo::Search::Query::build([query, nil]) }.to raise_error(Primo::Search::Query::QueryError)
     end
 
     it "it raises a query error" do
-      expect { Primo::Pnxs::Query::build([nil, query]) }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { Primo::Search::Query::build([nil, query]) }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 end
 
-describe "#{Primo::Pnxs::Query} parameter validation"  do
+describe "#{Primo::Search::Query} parameter validation"  do
   #{{{2 params
   context "Initialize with no arguments" do
-    let(:query) { Primo::Pnxs::Query.new }
+    let(:query) { Primo::Search::Query.new }
     it "raises an argument error" do
       expect { query }.to raise_error(ArgumentError)
     end
   end
 
   context "Initialize with empty parameters" do
-    let(:query) { Primo::Pnxs::Query.new({}) }
+    let(:query) { Primo::Search::Query.new({}) }
     it "raises a query error" do
-      expect { query }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
   #{{{2 :field
   context ":field parameter is missing" do
-    let(:query) { Primo::Pnxs::Query.new(
+    let(:query) { Primo::Search::Query.new(
       precision: "contains",
       value: "foo"
     ) }
     it "Uses the default field if not provided" do
-      expect { query }.to_not raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query }.to_not raise_error(Primo::Search::Query::QueryError)
     end
   end
 
   context ":field parameter is not known" do
-    let(:query) { Primo::Pnxs::Query.new(
+    let(:query) { Primo::Search::Query.new(
       precision: :contains,
       field: :foo,
       value: "bar"
     ) }
     it "raises a query error" do
-      expect { query }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
   context ":field parameter is known" do
-    let(:query) { Primo::Pnxs::Query.new(
+    let(:query) { Primo::Search::Query.new(
       precision: :exact,
       field: :facet_local23,
       value: "bar"
@@ -428,19 +428,19 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
 
   #{{{2 :operator
   context ":operator parameter is not known." do
-    let(:query) { Primo::Pnxs::Query.new(
+    let(:query) { Primo::Search::Query.new(
       precision: :exact,
       field: :facet_local23,
       value: "bar",
       operator: :FOO
     ) }
     it "raises a query error" do
-      expect { query }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
   context ":operator parameter is known" do
-    let(:query) { Primo::Pnxs::Query.new(
+    let(:query) { Primo::Search::Query.new(
       precision: :exact,
       field: :facet_local23,
       value: "bar",
@@ -453,18 +453,18 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
 
   #{{{2 :precision
   context ":precision parameter is not known" do
-    let(:query) { Primo::Pnxs::Query.new(
+    let(:query) { Primo::Search::Query.new(
       field: :any,
       value: "foo",
       precision: :foo,
     ) }
     it "raises a query error" do
-      expect { query }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
   context ":precision parameter is known" do
-    let(:query) { Primo::Pnxs::Query.new(
+    let(:query) { Primo::Search::Query.new(
       field: :any,
       value: "foo",
       precision: :contains,
@@ -475,30 +475,30 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
   end
 
   context ":precision :exact not used with a facet field" do
-    let(:query) { Primo::Pnxs::Query.new(
+    let(:query) { Primo::Search::Query.new(
       field: :facet_local1,
       value: "foo",
       precision: :begins_with,
     ) }
     it "raises a query error" do
-      expect { query }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
 
   #{{{2 :value
   context ":value parameter is missing" do
-    let(:query) { Primo::Pnxs::Query.new(
+    let(:query) { Primo::Search::Query.new(
       field: :any,
       precision: :contains,
     ) }
     it "raises a query" do
-      expect { query }.to raise_error(Primo::Pnxs::Query::QueryError)
+      expect { query }.to raise_error(Primo::Search::Query::QueryError)
     end
   end
 
   context ":value including commas" do
-    let(:query) { Primo::Pnxs::Query.new(
+    let(:query) { Primo::Search::Query.new(
       field: :any,
       precision: :contains,
       value: "A,B,C",
@@ -510,7 +510,7 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
   end
 
   context ":value including semicolons" do
-    let(:query) { Primo::Pnxs::Query.new(
+    let(:query) { Primo::Search::Query.new(
       field: :any,
       precision: :contains,
       value: "A;B;C",
@@ -521,10 +521,10 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
     end
   end
 
-  describe "#{Primo::Pnxs::Query}#to_h" do
+  describe "#{Primo::Search::Query}#to_h" do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -579,10 +579,10 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
   end
 
 
-  describe "#{Primo::Pnxs::Query}#facet"  do
+  describe "#{Primo::Search::Query}#facet"  do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -648,10 +648,10 @@ describe "#{Primo::Pnxs::Query} parameter validation"  do
 
   end
 
-  describe "#{Primo::Pnxs::Query}#date_range_facet"  do
+  describe "#{Primo::Search::Query}#date_range_facet"  do
     let(:query) {
       Primo.configure {}
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",

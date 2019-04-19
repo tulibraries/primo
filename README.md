@@ -93,12 +93,12 @@ Primo.find_by_id("foobar")
 Primo.find_by_id(id: "foo", context: :PC)
 ```
 
-* `Primo.find` also accepts a hash of attributes as defined in the [Primo PNX REST API](https://developers.exlibrisgroup.com/primo/apis/webservices/rest/pnxs) page and returns the API request result wrapped in an instance of the `Primo::Pnxs` class.
+* `Primo.find` also accepts a hash of attributes as defined in the [Primo PNX REST API](https://developers.exlibrisgroup.com/primo/apis/webservices/rest/pnxs) page and returns the API request result wrapped in an instance of the `Primo::Search` class.
 
-`q` is the only required parameter for this hash and it is either composed of a `Primo::Pnxs::Query` object, or a hash that is converted into a `Primo::Pnxs::Query` object.
+`q` is the only required parameter for this hash and it is either composed of a `Primo::Search::Query` object, or a hash that is converted into a `Primo::Search::Query` object.
 
 ```ruby
-  # q is an instance of Primo::Pnxs::Query, see the next section for details.
+  # q is an instance of Primo::Search::Query, see the next section for details.
   # defaults for :field and :precision are added if not included in the hash.
   response = Primo.find q: { field: sub:, precision: :contains, value: "goats" }
 
@@ -110,7 +110,7 @@ Primo.find_by_id(id: "foo", context: :PC)
 
 #### (Advanced) Generating a Query object
 ```ruby
-query = Primo::Pnxs::Query.new(
+query = Primo::Search::Query.new(
     precision: :exact,
     field: :facet_local23,
     value: "bar",
@@ -123,7 +123,7 @@ This API wrapper validates the `query` object according the specifications docum
 Once you have your base query, you can add facet queries to limit the search
 
 ```ruby
-query = Primo::Pnxs::Query.new(...)
+query = Primo::Search::Query.new(...)
 
 query.facet(
   { field: "creator",
@@ -178,7 +178,7 @@ query.date_range_facet({
       
 #### Generating advanced queries with advanced operators
 ```ruby
-query = Primo::Pnxs::Query.new(
+query = Primo::Search::Query.new(
     precision: :exact,
     field: :facet_local23,
     value: "bar",
@@ -193,7 +193,7 @@ query.not( field: :title, precision: :contains, value: "foo")
 ```ruby
 q1 = field: :title, precision: :contains, value: "foo"
 q1 = field: :title, precision: :contains, value: "bar"
-Primo::Pnxs::Query::build([q1, q2])
+Primo::Search::Query::build([q1, q2])
 ```
 
 This API wrapper validates the `query` object according the specifications documented in [the Ex Libris Api docs](https://developers.exlibrisgroup.com/primo/apis/webservices/xservices/search/briefsearch) for the `query` field.

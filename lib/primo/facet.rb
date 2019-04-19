@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-class Primo::Pnxs::Facet
-  class FacetError < ::Primo::Pnxs::PnxsError
+class Primo::Search::Facet
+  class FacetError < ::Primo::Search::SearchError
   end
 
   include Primo::ParameterValidatable

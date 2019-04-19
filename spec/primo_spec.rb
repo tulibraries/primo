@@ -7,8 +7,8 @@ RSpec.describe Primo do
     expect(Primo::VERSION).not_to be nil
   end
 
-  it "defines a Pnxs class" do
-    expect(Primo::Pnxs).not_to be nil
+  it "defines a Search class" do
+    expect(Primo::Search).not_to be nil
   end
 
   it "responds to find" do
@@ -33,19 +33,19 @@ RSpec.describe "Primo.find" do
 
   context "when we pass it nil" do
     it "raises a query error" do
-      expect { Primo.find }.to raise_error Primo::Pnxs::PnxsError
+      expect { Primo.find }.to raise_error Primo::Search::SearchError
     end
   end
 
   context "when we pass an empty set of options" do
     it "raises a query error" do
-      expect { Primo.find }.to raise_error Primo::Pnxs::PnxsError
+      expect { Primo.find }.to raise_error Primo::Search::SearchError
     end
   end
 
   context "when we pass options with valid q hash" do
     let(:query) {
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         precision: :contains,
         field: :title,
         value: "otter",
@@ -59,7 +59,7 @@ RSpec.describe "Primo.find" do
 
   context "when we pass options with valid q hash" do
     let(:query) {
-      Primo::Pnxs::Query.new(
+      Primo::Search::Query.new(
         "precision" =>  "contains",
         "field" => "title",
         "value" =>  "otter",
@@ -105,15 +105,15 @@ RSpec.describe "Primo.find" do
 
     it "does raise a ArticleNotFound error" do
       VCR.eject_cassette "primo_pnxs_get_record"
-      expect { Primo.find query }.to raise_error Primo::Pnxs::ArticleNotFound
+      expect { Primo.find query }.to raise_error Primo::Search::ArticleNotFound
     end
   end
 
   context "when value is an array" do
     let(:query) { { q: { value: [] } } }
 
-    it "builds the query using the Primo::Pnxs::Query.build method" do
-      expect(Primo::Pnxs::Query).to receive(:build).with([])
+    it "builds the query using the Primo::Search::Query.build method" do
+      expect(Primo::Search::Query).to receive(:build).with([])
       begin Primo.find(query) rescue nil end
     end
   end
@@ -132,11 +132,11 @@ RSpec.describe "Primo.find_by_id" do
 
   context "pass in nil" do
     it "raises an error if we pass in nothing" do
-      expect { Primo.find_by_id }.to raise_error Primo::Pnxs::PnxsError
+      expect { Primo.find_by_id }.to raise_error Primo::Search::SearchError
     end
 
     it "raises an error if we pass in nil" do
-      expect { Primo.find_by_id nil }.to raise_error Primo::Pnxs::PnxsError
+      expect { Primo.find_by_id nil }.to raise_error Primo::Search::SearchError
     end
   end
 
@@ -156,7 +156,7 @@ RSpec.describe "Primo.find_by_id" do
 
   context "pass in empty hash" do
     it "raises an error if we pass in an empty hash" do
-      expect { Primo.find_by_id {} }.to raise_error Primo::Pnxs::PnxsError
+      expect { Primo.find_by_id {} }.to raise_error Primo::Search::SearchError
     end
   end
 
@@ -169,7 +169,7 @@ RSpec.describe "Primo.find_by_id" do
     end
 
     it "applies record fields to the record object" do
-      expect(record.title).to_not be_nil
+      expect(record.pnx).to_not be_nil
     end
   end
 
@@ -182,7 +182,7 @@ RSpec.describe "Primo.find_by_id" do
     end
 
     it "applies record fields to the record object" do
-      expect(record.title).to_not be_nil
+      expect(record.pnx).to_not be_nil
     end
   end
 end
