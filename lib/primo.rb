@@ -3,7 +3,7 @@
 require "primo/version"
 require "primo/config"
 require "primo/parameter_validatable"
-require "primo/pnxs"
+require "primo/search"
 require "primo/query"
 require "primo/facet"
 
@@ -12,22 +12,22 @@ module Primo
     options ||= {}
 
     if options.is_a? String
-      query = Primo::Pnxs::Query.new(value: options)
+      query = Primo::Search::Query.new(value: options)
       return find(q: query)
     end
 
     if  options[:q]&.is_a? Hash
       if options[:q][:value]&.is_a? Array
         queries = options[:q][:value]
-        query = Primo::Pnxs::Query.build(queries)
+        query = Primo::Search::Query.build(queries)
       else
-        query = Primo::Pnxs::Query.new(options[:q])
+        query = Primo::Search::Query.new(options[:q])
       end
 
       return find(options.merge(q: query))
     end
 
-    Primo::Pnxs::get(options)
+    Primo::Search::get(options)
   end
 
   def self.find_by_id(params = {})

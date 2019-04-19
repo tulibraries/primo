@@ -5,8 +5,8 @@ require "forwardable"
 
 module Primo
   # Encapsolates the Primo PNXS REST API
-  class Pnxs
-    class PnxsError < StandardError
+  class Search
+    class SearchError < StandardError
       def initialize(message, loggable = {})
         if Primo.configuration.enable_loggable
           message = loggable.merge(error: message).to_json
@@ -16,7 +16,7 @@ module Primo
       end
     end
 
-    class ArticleNotFound < PnxsError
+    class ArticleNotFound < SearchError
     end
 
     include HTTParty
@@ -55,7 +55,7 @@ module Primo
 
   private
     # Base class for classes encapsolating Primo REST API methods.
-    class PnxsMethod
+    class BaseSearchMethod
       include Primo::ParameterValidatable
 
       def initialize(params = {})
@@ -89,15 +89,15 @@ module Primo
             { vid: vid, scope: scope }
           else
             error = "Both or neither of :vid or :scope must be configured"
-            throw Primo::Pnxs::PnxsError.new error, loggable
+            throw Primo::Search::SearchError.new error, loggable
           end
         end
 
-        RESOURCE = "/primo/v1/pnxs"
+        RESOURCE = "/primo/v1/search"
     end
 
     # Encapsolates the GET /v1/pnxs Primo REST API Method URL and Parameters.
-    class SearchMethod < PnxsMethod
+    class SearchMethod < BaseSearchMethod
       def url
         Primo.configuration.region + "/primo/v1/search"
       end
@@ -124,14 +124,14 @@ module Primo
 
         def validators
           [{ query: :has_valid_query?,
-             message: lambda { |p| "field :q must be a valid instance of Primo::Pnxs::Query " } },
+             message: lambda { |p| "field :q must be a valid instance of Primo::Search::Query " } },
           { query: :only_known_parameters?,
             message: lambda { |p| "only known parameters can be passed " } },
           ]
         end
 
         def has_valid_query?(params)
-          params[:q].is_a?(Primo::Pnxs::Query)
+          params[:q].is_a?(Primo::Search::Query)
         end
 
         def only_known_parameters?(params)
@@ -141,7 +141,7 @@ module Primo
 
     # Encapsolates the GET /v1/pnxs/{context}/{recordId} Primo REST API Method
     # URL and Parameters.
-    class RecordMethod < PnxsMethod
+    class RecordMethod < BaseSearchMethod
       def url
         context = @params[:context] || Primo.configuration.context
         id = CGI.unescape(@params[:id])
@@ -155,7 +155,8 @@ module Primo
       end
 
       def params
-        @params.select { |k, v| !URL_KEYS.include? k }
+        @params.merge(vid_scope)
+          .select { |k, v| !URL_KEYS.include? k }
           .merge auth
       end
 
@@ -166,7 +167,7 @@ module Primo
 
       def validate_response(response)
         message = "The article for id #{@params[:id]} was not found."
-        raise ArticleNotFound.new(message, loggable) unless response["title"]
+        raise ArticleNotFound.new(message, loggable) unless response.dig("pnx", "search", "title")
       end
 
       private
@@ -189,11 +190,11 @@ module Primo
     end
 
     # Catch all Method.
-    class DefaultMethod < PnxsMethod
+    class DefaultMethod < BaseSearchMethod
       attr_reader :url
 
       def initialize(params = {})
-        raise PnxsError.new "No method found to process given parameters.", loggable
+        raise SearchError.new "No method found to process given parameters.", loggable
       end
 
       def self.can_process?(params = {})

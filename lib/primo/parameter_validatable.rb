@@ -35,9 +35,9 @@ module Primo
 
     # Use a local error class if the Class has a local error class
     # following the convention Primo::ClassName::ClassNameError
-    # Otherwise use Primo::Pnxs::PnxsError
+    # Otherwise use Primo::Search::SearchError
     def error
-      error_class = Primo::Pnxs::PnxsError
+      error_class = Primo::Search::SearchError
       class_name = self.class.to_s.split("::").last
       class_error_name = class_name + "Error"
       if self.class.const_defined?(class_error_name)
@@ -45,5 +45,5 @@ module Primo
       end
       error_class
     end
- end
+  end
 end

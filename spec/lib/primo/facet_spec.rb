@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-describe Primo::Pnxs::Facet  do
+describe Primo::Search::Facet  do
   before do
     Primo.configure
   end
@@ -13,7 +13,7 @@ describe Primo::Pnxs::Facet  do
       value: "bar"
     )}
     it "transforms to an expected string with defaults" do
-      expect(facet).to be_a Primo::Pnxs::Facet
+      expect(facet).to be_a Primo::Search::Facet
     end
   end
   context "Builds an exclude facet" do
@@ -31,7 +31,7 @@ describe Primo::Pnxs::Facet  do
       value: "bar"
     ) }
     it "raises an error" do
-      expect { facet }.to raise_error(Primo::Pnxs::Facet::FacetError)
+      expect { facet }.to raise_error(Primo::Search::Facet::FacetError)
     end
   end
   context "params don't include :value" do
@@ -39,7 +39,7 @@ describe Primo::Pnxs::Facet  do
       field: "creator"
     ) }
     it "transforms to an expected string with defaults" do
-      expect { facet }.to raise_error(Primo::Pnxs::Facet::FacetError)
+      expect { facet }.to raise_error(Primo::Search::Facet::FacetError)
     end
   end
 end

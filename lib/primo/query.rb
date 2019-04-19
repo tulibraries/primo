@@ -8,8 +8,8 @@
 # https://developers.exlibrisgroup.com/primo/apis/webservices/rest/pnxs
 # https://developers.exlibrisgroup.com/primo/apis/webservices/xservices/search/briefsearch
 
-class Primo::Pnxs::Query
-  class QueryError < ::Primo::Pnxs::PnxsError
+class Primo::Search::Query
+  class QueryError < ::Primo::Search::SearchError
   end
 
   def initialize(params)
@@ -57,7 +57,7 @@ class Primo::Pnxs::Query
   end
 
   def facet(params)
-    facet = Primo::Pnxs::Facet.new(params)
+    facet = Primo::Search::Facet.new(params)
     if facet.operation == :exclude
       @exclude_facets.push(facet)
     else

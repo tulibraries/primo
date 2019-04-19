@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "#{Primo::Pnxs}#get" do
+RSpec.describe "#{Primo::Search}#get" do
   before(:all) do
     VCR.insert_cassette "primo_pnxs_get"
     Primo.configure
@@ -15,8 +15,8 @@ RSpec.describe "#{Primo::Pnxs}#get" do
 
   context "passing nil" do
     it "should raise a pnxs error" do
-      expect { Primo::Pnxs::get() }.to raise_error(Primo::Pnxs::PnxsError)
-      expect { Primo::Pnxs::get nil }.to raise_error(Primo::Pnxs::PnxsError)
+      expect { Primo::Search::get() }.to raise_error(Primo::Search::SearchError)
+      expect { Primo::Search::get nil }.to raise_error(Primo::Search::SearchError)
     end
   end
 
@@ -24,13 +24,13 @@ RSpec.describe "#{Primo::Pnxs}#get" do
     let(:options) { { q: nil } }
 
     it "should raise a pnxs error" do
-      expect { Primo::Pnxs::get(options) }.to raise_error(Primo::Pnxs::PnxsError)
+      expect { Primo::Search::get(options) }.to raise_error(Primo::Search::SearchError)
     end
   end
 
   context "passing a valid query with unknown option" do
     let(:options) {
-      q = Primo::Pnxs::Query.new(
+      q = Primo::Search::Query.new(
         precision: :exact,
         field: :facet_local23,
         value: "bar",
@@ -40,13 +40,13 @@ RSpec.describe "#{Primo::Pnxs}#get" do
     }
 
     it "should raise a pnxs error" do
-      expect { Primo::Pnxs::get(options) }.to raise_error(Primo::Pnxs::PnxsError)
+      expect { Primo::Search::get(options) }.to raise_error(Primo::Search::SearchError)
     end
   end
 
   context "passing a valid query" do
     let(:options) {
-      q = Primo::Pnxs::Query.new(
+      q = Primo::Search::Query.new(
         precision: :contains,
         field: :title,
         value: "otter",
@@ -56,15 +56,15 @@ RSpec.describe "#{Primo::Pnxs}#get" do
     }
 
     it "should not raise errors" do
-      expect { Primo::Pnxs::get(options) }.to_not raise_error
+      expect { Primo::Search::get(options) }.to_not raise_error
     end
 
-    it "should return an instance of Pnxs" do
-      expect(Primo::Pnxs::get(options)).to be_an_instance_of(Primo::Pnxs)
+    it "should return an instance of Search" do
+      expect(Primo::Search::get(options)).to be_an_instance_of(Primo::Search)
     end
 
     it "adds the apikey to the query" do
-      method = Primo::Pnxs.send(:get_method, options)
+      method = Primo::Search.send(:get_method, options)
       expect(method.params).to have_key(:apikey)
       expect(method.params).to have_value("TEST_API_KEY")
     end
@@ -72,7 +72,7 @@ RSpec.describe "#{Primo::Pnxs}#get" do
   end
 end
 
-RSpec.describe Primo::Pnxs do
+RSpec.describe Primo::Search do
   before(:all) do
     VCR.insert_cassette "primo_pnxs_get"
     Primo.configure
@@ -84,13 +84,13 @@ RSpec.describe Primo::Pnxs do
   end
 
   let(:pnxs) {
-    q = Primo::Pnxs::Query.new(
+    q = Primo::Search::Query.new(
       precision: :contains,
       field: :title,
       value: "otter",
       operator: :OR,
     )
-    Primo::Pnxs::get q: q
+    Primo::Search::get q: q
   }
 
   it "should respond to :docs with non nil" do
@@ -130,17 +130,17 @@ RSpec.describe Primo::Pnxs do
 
       Primo.configure { |c| c.region = "https://www.foobar.com" }
 
-      q = Primo::Pnxs::Query.new(
+      q = Primo::Search::Query.new(
         precision: :contains,
         field: :title,
         value: "otter",
         operator: :OR,
       )
-      Primo::Pnxs::get q: q
+      Primo::Search::get q: q
     }
 
     it "should raise a pnxs error" do
-      expect { pnxs }.to raise_error(Primo::Pnxs::PnxsError)
+      expect { pnxs }.to raise_error(Primo::Search::SearchError)
     end
   end
 end
