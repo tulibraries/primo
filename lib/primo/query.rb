@@ -94,7 +94,7 @@ class Primo::Search::Query
     REGULAR_FIELDS = %i(
       any desc title creator sub subject rtype isbn issn rectype dlink
       ftext general toc fmt lang cdate sid rid addsrcrid addtitle
-      pnxtype alttitle abstract fiction dr_s dr_e
+      pnxtype alttitle abstract fiction dr_s dr_e searchCDI
     )
     FACET_FIELDS = %i(
       facet_creator facet_lang facet_rtype facet_pfilter facet_topic

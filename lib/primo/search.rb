@@ -4,7 +4,7 @@ require "httparty"
 require "forwardable"
 
 module Primo
-  # Encapsolates the Primo PNXS REST API
+  # Encapsulates the Primo Search REST API
   class Search
     class SearchError < StandardError
       def initialize(message, loggable = {})
@@ -54,7 +54,7 @@ module Primo
     end
 
   private
-    # Base class for classes encapsolating Primo REST API methods.
+    # Base class for classes encapsulating Primo REST API methods.
     class BaseSearchMethod
       include Primo::ParameterValidatable
 
@@ -96,7 +96,7 @@ module Primo
         RESOURCE = "/primo/v1/search"
     end
 
-    # Encapsolates the GET /v1/pnxs Primo REST API Method URL and Parameters.
+    # Encapsulates the GET /v1/search Primo REST API Method URL and Parameters.
     class SearchMethod < BaseSearchMethod
       def url
         Primo.configuration.region + "/primo/v1/search"
@@ -119,7 +119,7 @@ module Primo
 
         PARAMETER_KEYS = %i(
           inst q qInclude qExclude lang offset limit sort
-          view addfields vid scope
+          view addfields vid scope searchCDI
         )
 
         def validators
@@ -139,7 +139,10 @@ module Primo
         end
     end
 
-    # Encapsolates the GET /v1/pnxs/{context}/{recordId} Primo REST API Method
+    # NOTE: This API may be deprecated as I don't see documentation on Alma API
+    # docs pages anymore.
+    #
+    # Encapsulates the GET /v1/search/{context}/{recordId} Primo REST API Method
     # URL and Parameters.
     class RecordMethod < BaseSearchMethod
       def url
@@ -173,7 +176,7 @@ module Primo
       private
 
         URL_KEYS = %i(id context)
-        PARAMETER_KEYS = %i( inst lang )
+        PARAMETER_KEYS = %i(inst lang searchCDI)
 
         def validators
           [
