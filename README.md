@@ -1,4 +1,4 @@
-# Primo [![Build Status](https://travis-ci.org/tulibraries/primo.svg?branch=master)](https://travis-ci.org/tulibraries/primo)
+# Primo [![Build Status](https://travis-ci.org/tulibraries/primo.svg?branch=main)](https://travis-ci.org/tulibraries/primo)
 
 A client that wraps the Primo PNX REST API. The primary motivator for this
 wrapper is to set up the authentication against the Primo PNX server in a
@@ -50,10 +50,10 @@ Primo.configure do |config|
 
   # By default the environment is assumed to be :hosted
   config.environment = :local
-  
+
   # By default vid will be nil
   config.vid = "MYVID"
-  
+
   # By default scope will be nil
   config.scope = "pci_scope"
 
@@ -175,7 +175,7 @@ query.date_range_facet({
     })
 ```
 
-      
+
 #### Generating advanced queries with advanced operators
 ```ruby
 query = Primo::Search::Query.new(
