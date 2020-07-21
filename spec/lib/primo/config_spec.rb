@@ -30,6 +30,16 @@ describe "Configuring Primo" do
     end
   end
 
+  context "params set limit of 50" do
+    before(:all) do
+      Primo.configure {}
+    end
+
+    it "doubles the default timeout" do
+      expect(Primo.configuration.timeout("limit" => 50)).to eql 10
+    end
+  end
+
   context "when attributes are set in the passed block" do
     before(:all) do
       Primo.configure do |config|
