@@ -28,5 +28,14 @@ module Primo
       @enable_loggable = false
       @timeout = 5
     end
+
+    def timeout(params={})
+      limit = params.fetch("limit", 10).to_i
+      if limit >= 50
+        2 * @timeout
+      else
+        @timeout
+      end
+    end
   end
 end

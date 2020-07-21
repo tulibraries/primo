@@ -50,8 +50,9 @@ module Primo
     def self.get(params = {})
       method = get_method params
       (url, query) = [method.url, method.params]
-      new super(url, query: query, timeout: Primo.configuration.timeout), method
+      new super(url, query: query, timeout: Primo.configuration.timeout(params)), method
     end
+
 
   private
     # Base class for classes encapsulating Primo REST API methods.
