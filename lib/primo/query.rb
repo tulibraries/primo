@@ -194,7 +194,7 @@ class Primo::Search::Query
       attr_reader :min, :max
 
       def initialize(min = nil, max = nil)
-        @min = Integer min rescue 0
+        @min = Integer min rescue 1000
         @max = Integer max rescue 9999
       end
 
