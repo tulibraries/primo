@@ -658,7 +658,7 @@ describe "#{Primo::Search::Query} parameter validation"  do
       ) }
     context "do not provide min or max" do
       it "provides defaults min and max" do
-        expect(query.date_range_facet.include_facets).to eq("facet_searchcreationdate,exact,[0 TO 9999]")
+        expect(query.date_range_facet.include_facets).to eq("facet_searchcreationdate,exact,[1000 TO 9999]")
       end
     end
 
@@ -670,7 +670,7 @@ describe "#{Primo::Search::Query} parameter validation"  do
 
     context "only provide max" do
       it "provides default min" do
-        expect(query.date_range_facet(max: 1).include_facets).to eq("facet_searchcreationdate,exact,[0 TO 1]")
+        expect(query.date_range_facet(max: 1).include_facets).to eq("facet_searchcreationdate,exact,[1000 TO 1]")
       end
     end
 
@@ -694,7 +694,7 @@ describe "#{Primo::Search::Query} parameter validation"  do
       it "provides default min and max" do
         q = query.date_range_facet(min: "", max: "  ")
         include_facets = q.include_facets
-        expect(include_facets).to eq("facet_searchcreationdate,exact,[0 TO 9999]")
+        expect(include_facets).to eq("facet_searchcreationdate,exact,[1000 TO 9999]")
       end
     end
 
@@ -702,7 +702,7 @@ describe "#{Primo::Search::Query} parameter validation"  do
       it "provides default min and max" do
         q = query.date_range_facet(min: "foo", max: "bar")
         include_facets = q.include_facets
-        expect(include_facets).to eq("facet_searchcreationdate,exact,[0 TO 9999]")
+        expect(include_facets).to eq("facet_searchcreationdate,exact,[1000 TO 9999]")
       end
     end
 
