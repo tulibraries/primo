@@ -142,5 +142,24 @@ RSpec.describe Primo::Search do
     it "should raise a pnxs error" do
       expect { pnxs }.to raise_error(Primo::Search::SearchError)
     end
+
+    it "should capture the primo endpoint and status code" do
+      stub_request(:get, /.*www\.foobar\.com\/.*/).
+      to_return(status: 500, body: "Nope")
+
+      Primo.configure { |c| c.region = "https://www.foobar.com" }
+
+      q = Primo::Search::Query.new(
+        precision: :contains,
+        field: :title,
+        value: "otter",
+        operator: :OR,
+      )
+      expect { Primo::Search::get q: q }.to raise_error { |error|
+        lines = error.message.split("\n")
+        expect(lines[0]).to eq "Attempting to work with an invalid response: 500"
+        expect(lines[1]).to eq "Endpoint: https://www.foobar.com/primo/v1/search?q=title%2Ccontains%2Cotter%2COR&apikey=TEST_API_KEY&vid=&scope=&pcAvailability=false"
+      }
+    end
   end
 end
