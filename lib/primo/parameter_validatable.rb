@@ -27,10 +27,6 @@ module Primo
       validators.each do |validate|
         message = validate[:message][params]
         if !send(validate[:query], params)
-          if params.respond_to?(:request) && params.request.respond_to?(:uri)
-            message += "\nEndpoint: #{params.request.uri.to_s}"
-          end
-
           raise error_class.new(message)
         end
       end
