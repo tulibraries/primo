@@ -7,6 +7,7 @@ module Primo
   # Encapsulates the Primo Search REST API
   class Search
     class SearchError < StandardError
+
       def initialize(message, loggable = {})
         if Primo.configuration.enable_loggable
           message = loggable.merge(error: message).to_json
@@ -217,7 +218,7 @@ module Primo
     def validators
       [
         { query: :is_200?,
-          message: lambda { |r| "Attempting to work with an invalid response: #{r.code}" } },
+          message: lambda { |r| "Attempting to work with an invalid response: #{r.code}\nEndpoint: #{r.request.uri}" } }
       ]
     end
 
