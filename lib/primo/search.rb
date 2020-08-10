@@ -218,7 +218,7 @@ module Primo
     def validators
       [
         { query: :is_200?,
-          message: lambda { |r| "Attempting to work with an invalid response: #{r.code}" } }
+          message: lambda { |r| "Attempting to work with an invalid response: #{r.code}\nEndpoint: #{r.request.uri}" } }
       ]
     end
 
