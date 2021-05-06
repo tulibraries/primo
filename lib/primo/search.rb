@@ -7,7 +7,6 @@ module Primo
   # Encapsulates the Primo Search REST API
   class Search
     class SearchError < StandardError
-
       def initialize(message, loggable = {})
         if Primo.configuration.enable_loggable
           message = loggable.merge(error: message).to_json
