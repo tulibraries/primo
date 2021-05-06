@@ -29,7 +29,7 @@ module Primo
       @timeout = 5
     end
 
-    def timeout(params={})
+    def timeout(params = {})
       limit = params.fetch("limit", 10).to_i
       if limit >= 50
         2 * @timeout
