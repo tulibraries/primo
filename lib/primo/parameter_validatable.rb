@@ -27,7 +27,7 @@ module Primo
       validators.each do |validate|
         message = validate[:message][params]
         if !send(validate[:query], params)
-          raise error_class.new(message)
+          raise error_class.new(message) unless !Primo.configuration.validate_parameters
         end
       end
     end

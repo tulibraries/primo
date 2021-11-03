@@ -65,6 +65,9 @@ Primo.configure do |config|
 
   # By default timeout is set to 5 seconds
   config.timeout = 10
+
+  # By default we validate parametters.
+  config.validate_parameters = false
 end
 ```
 Now you can access those configuration attributes with `Primo.configuration.apikey`

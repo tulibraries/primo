@@ -13,7 +13,7 @@ module Primo
   class Configuration
     attr_accessor :apikey, :region, :operator, :field, :precision
     attr_accessor :context, :environment, :inst, :vid, :scope, :pcavailability, :enable_loggable
-    attr_accessor :timeout
+    attr_accessor :timeout, :validate_parameters
 
     def initialize
       @apikey = "TEST_API_KEY"
@@ -27,6 +27,7 @@ module Primo
       @pcavailability = false
       @enable_loggable = false
       @timeout = 5
+      @validate_parameters = true
     end
 
     def timeout(params = {})

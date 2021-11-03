@@ -49,10 +49,14 @@ module Primo
     # Overrides HTTParty::get in order to add some custom validations.
     def self.get(params = {})
       method = get_method params
-      (url, query) = [method.url, method.params]
+      (url, query) = url(params)
       new super(url, query: query, timeout: Primo.configuration.timeout(params)), method
     end
 
+    def self.url(params = {})
+      method = get_method params
+      [method.url, method.params]
+    end
 
   private
     # Base class for classes encapsulating Primo REST API methods.
@@ -189,7 +193,8 @@ module Primo
         def only_known_parameters?(params)
           keys = (PARAMETER_KEYS + URL_KEYS)
           string_keys = keys.map(&:to_s)
-          (params.keys - keys - string_keys).empty?
+          Primo.configuration.validate_parameters ?
+            (params.keys - keys - string_keys).empty? : true
         end
     end
 
