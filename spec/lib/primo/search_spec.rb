@@ -28,7 +28,6 @@ RSpec.describe "#{Primo::Search}#get" do
     end
   end
 
-
   context "passing a valid query with unknown option" do
     let(:options) {
       q = Primo::Search::Query.new(
