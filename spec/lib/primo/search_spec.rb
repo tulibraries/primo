@@ -43,7 +43,7 @@ RSpec.describe "#{Primo::Search}#get" do
       expect { Primo::Search::get(options) }.to raise_error(Primo::Search::SearchError)
     end
 
-    it "should be ok if Primo.configuraiont.validate_parameters is set to false" do
+    it "should be ok if Primo.configuration.validate_parameters is set to false" do
       Primo.configuration.validate_parameters = false;
       expect(Primo::Search::get(options)).to be_a(Primo::Search)
     end
