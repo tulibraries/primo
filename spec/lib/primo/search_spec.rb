@@ -42,6 +42,11 @@ RSpec.describe "#{Primo::Search}#get" do
     it "should raise a pnxs error" do
       expect { Primo::Search::get(options) }.to raise_error(Primo::Search::SearchError)
     end
+
+    it "should be ok if Primo.configuration.validate_parameters is set to false" do
+      Primo.configuration.validate_parameters = false;
+      expect(Primo::Search::get(options)).to be_a(Primo::Search)
+    end
   end
 
   context "passing a valid query" do
@@ -67,6 +72,18 @@ RSpec.describe "#{Primo::Search}#get" do
       method = Primo::Search.send(:get_method, options)
       expect(method.params).to have_key(:apikey)
       expect(method.params).to have_value("TEST_API_KEY")
+    end
+
+    it "should be possible to get url and params we will use" do
+      url, params = Primo::Search.url(options)
+      expect(url).to eq("https://api-na.hosted.exlibrisgroup.com/primo/v1/search")
+      expect(params).to eq(
+        apikey: "TEST_API_KEY",
+        pcAvailability: false,
+        q: "title,contains,otter,OR",
+        scope: nil,
+        vid: nil
+      )
     end
 
   end

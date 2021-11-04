@@ -23,6 +23,7 @@ describe "Configuring Primo" do
       expect(Primo.configuration.scope).to eql nil
       expect(Primo.configuration.pcavailability).to eql false
       expect(Primo.configuration.timeout).to eql 5
+      expect(Primo.configuration.validate_parameters).to eql true
     end
 
     after(:all) do
