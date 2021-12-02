@@ -1,11 +1,11 @@
 version: 2.1
 orbs:
-  ruby: circleci/ruby@0.1.2
+  ruby: circleci/ruby@1.2
 
 jobs:
   build:
     docker:
-      - image: circleci/ruby:2.7.2
+      - image: cimg/ruby:2.7.2
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -16,7 +16,7 @@ jobs:
       - run:
           name: Which bundler?
           command: bundle -v
-      - ruby/bundle-install
+      - run: bundle install
       - run:
           name: lint
           command: bundle exec rubocop
