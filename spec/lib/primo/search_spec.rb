@@ -66,6 +66,23 @@ RSpec.describe "#{Primo::Search}#get" do
     }
   end
 
+  context "passing in an override for pcAvailability but where key is a string" do
+    let(:params) {
+      q = Primo::Search::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+        operator: :OR,
+      )
+      { q: q, "pcavailability" => "bar" }
+
+      it "uses the pcAvailability override provided via user params" do
+        method = Primo::Search.send(:get_method, params)
+        expect(method.params[:pcavailability]).to eq("bar")
+      end
+    }
+  end
+
   context "passing a valid query" do
     let(:options) {
       q = Primo::Search::Query.new(
