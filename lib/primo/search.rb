@@ -48,6 +48,7 @@ module Primo
 
     # Overrides HTTParty::get in order to add some custom validations.
     def self.get(params = {})
+      params = params.to_h.transform_keys(&:to_sym)
       method = get_method params
       (url, query) = url(params)
       new super(url, query: query, timeout: Primo.configuration.timeout(params)), method
@@ -57,6 +58,7 @@ module Primo
       method = get_method params
       [method.url, method.params]
     end
+
 
   private
     # Base class for classes encapsulating Primo REST API methods.
@@ -127,6 +129,7 @@ module Primo
         PARAMETER_KEYS = %i(
           inst q qInclude qExclude lang offset limit sort
           view addfields vid scope searchCDI
+          apikey inst pcAvailability pcavailability vid scope
         )
 
         def validators
@@ -185,7 +188,7 @@ module Primo
       private
 
         URL_KEYS = %i(id context)
-        PARAMETER_KEYS = %i(inst lang searchCDI, apikey, inst, pcAvailability, pcavailability, vid, scope)
+        PARAMETER_KEYS = %i(inst lang searchCDI apikey inst pcAvailability pcavailability vid scope)
 
         def validators
           [
