@@ -59,10 +59,10 @@ RSpec.describe "#{Primo::Search}#get" do
       )
       { q: q, pcavailability: "foo" }
 
-    it "uses the pcAvailability override provided via user params" do
-      method = Primo::Search.send(:get_method, params)
-      expect(method.params[:pcavailability]).to eq("foo")
-    end
+      it "uses the pcAvailability override provided via user params" do
+        method = Primo::Search.send(:get_method, params)
+        expect(method.params[:pcavailability]).to eq("foo")
+      end
     }
   end
 
