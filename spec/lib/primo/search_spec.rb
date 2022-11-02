@@ -49,6 +49,23 @@ RSpec.describe "#{Primo::Search}#get" do
     end
   end
 
+  context "passing in an override for pcAvailability" do
+    let(:params) {
+      q = Primo::Search::Query.new(
+        precision: :exact,
+        field: :facet_local23,
+        value: "bar",
+        operator: :OR,
+      )
+      { q: q, pcavailability: "foo" }
+
+    it "uses the pcAvailability override provided via user params" do
+      method = Primo::Search.send(:get_method, params)
+      expect(method.params[:pcavailability]).to eq("foo")
+    end
+    }
+  end
+
   context "passing a valid query" do
     let(:options) {
       q = Primo::Search::Query.new(
@@ -175,7 +192,7 @@ RSpec.describe Primo::Search do
       expect { Primo::Search::get q: q }.to raise_error { |error|
         lines = error.message.split("\n")
         expect(lines[0]).to eq "Attempting to work with an invalid response: 500"
-        expect(lines[1]).to eq "Endpoint: https://www.foobar.com/primo/v1/search?q=title%2Ccontains%2Cotter%2COR&apikey=TEST_API_KEY&vid=&scope=&pcAvailability=false"
+        expect(lines[1]).to eq "Endpoint: https://www.foobar.com/primo/v1/search?apikey=TEST_API_KEY&vid=&scope=&q=title%2Ccontains%2Cotter%2COR&pcAvailability=false"
       }
     end
   end
