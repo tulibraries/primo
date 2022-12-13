@@ -1,11 +1,11 @@
 version: 2.1
 orbs:
-  ruby: circleci/ruby@1.2
+  ruby: circleci/ruby@2.0.0
 
 jobs:
   build:
     docker:
-      - image: cimg/ruby:2.7.2
+      - image: cimg/ruby:3.1
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD

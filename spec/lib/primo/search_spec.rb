@@ -36,7 +36,7 @@ RSpec.describe "#{Primo::Search}#get" do
         value: "bar",
         operator: :OR,
       )
-      { q: q, foo: "bar" }
+      { q:, foo: "bar" }
     }
 
     it "should raise a pnxs error" do
@@ -57,7 +57,7 @@ RSpec.describe "#{Primo::Search}#get" do
         value: "bar",
         operator: :OR,
       )
-      { q: q, pcavailability: "foo" }
+      { q:, pcavailability: "foo" }
 
       it "uses the pcAvailability override provided via user params" do
         method = Primo::Search.send(:get_method, params)
@@ -74,7 +74,7 @@ RSpec.describe "#{Primo::Search}#get" do
         value: "bar",
         operator: :OR,
       )
-      { q: q, "pcavailability" => "bar" }
+      { q:, "pcavailability" => "bar" }
 
       it "uses the pcAvailability override provided via user params" do
         method = Primo::Search.send(:get_method, params)
@@ -91,7 +91,7 @@ RSpec.describe "#{Primo::Search}#get" do
         value: "otter",
         operator: :OR,
       )
-      { q: q }
+      { q: }
     }
 
     it "should not raise errors" do
@@ -141,7 +141,7 @@ RSpec.describe Primo::Search do
       value: "otter",
       operator: :OR,
     )
-    Primo::Search::get q: q
+    Primo::Search::get q:
   }
 
   it "should respond to :docs with non nil" do
@@ -187,7 +187,7 @@ RSpec.describe Primo::Search do
         value: "otter",
         operator: :OR,
       )
-      Primo::Search::get q: q
+      Primo::Search::get q:
     }
 
     it "should raise a pnxs error" do
@@ -206,7 +206,7 @@ RSpec.describe Primo::Search do
         value: "otter",
         operator: :OR,
       )
-      expect { Primo::Search::get q: q }.to raise_error { |error|
+      expect { Primo::Search::get q: }.to raise_error { |error|
         lines = error.message.split("\n")
         expect(lines[0]).to eq "Attempting to work with an invalid response: 500"
         expect(lines[1]).to eq "Endpoint: https://www.foobar.com/primo/v1/search?apikey=TEST_API_KEY&vid=&scope=&q=title%2Ccontains%2Cotter%2COR&pcAvailability=false"

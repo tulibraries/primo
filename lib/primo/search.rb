@@ -51,7 +51,7 @@ module Primo
       params = params.to_h.transform_keys(&:to_sym)
       method = get_method params
       (url, query) = url(params)
-      new super(url, query: query, timeout: Primo.configuration.timeout(params)), method
+      new super(url, query:, timeout: Primo.configuration.timeout(params)), method
     end
 
     def self.url(params = {})
@@ -71,7 +71,7 @@ module Primo
       end
 
       def loggable
-        { url: url, query: @params }
+        { url:, query: @params }
           .select { |k, v| !v.nil? }
       end
 
@@ -93,7 +93,7 @@ module Primo
           scope = Primo.configuration.scope
 
           if (vid && scope) || (vid.nil? && scope.nil?)
-            { vid: vid, scope: scope }
+            { vid:, scope: }
           else
             error = "Both or neither of :vid or :scope must be configured"
             throw Primo::Search::SearchError.new error, loggable
