@@ -68,6 +68,24 @@ Primo.configure do |config|
 
   # By default we validate parameters.
   config.validate_parameters = false
+
+  # We do not enable primo request logs by default
+  config.enable_log_requests = false
+
+  # By default we use the built in Ruby logger, but you can set it to another logger
+  config.logger = Logger.new("log/primo_requests.log")
+
+  # Log level is set to :info by default
+  config.log_level = :info
+
+  # Log format is set to :logstash by deafult
+  config.log_format = :logstash
+
+  # debugging output is disabled by default
+  config.enable_debug_output = false
+
+  # The debug_output_stream is set to $stderr by default
+  config.debug_output_stream = $stderr
 end
 ```
 Now you can access those configuration attributes with `Primo.configuration.apikey`
@@ -202,9 +220,27 @@ Primo::Search::Query::build([q1, q2])
 This API wrapper validates the `query` object according the specifications documented in [the Ex Libris Api docs](https://developers.exlibrisgroup.com/primo/apis/webservices/xservices/search/briefsearch) for the `query` field.
 
 ### Logging
+
+#### Using :enable_loggable
 This gem exposes a loggable interface to responses.  Thus a response will respond to `loggable` and return a hash with state values that may be of use to log.
 
 As a bonus, when we enable this feature using the `enable_loggable` configuration, error messages will contain the loggable values and be formatted as JSON.
+
+#### Using logging configuration.
+You can configure logging via the following configurations:
+* `enable_log_requests`: (`true/false`)
+* `log_level`
+* `log_format`
+* `logger`
+
+The logger can be any logger including the Rails.logger.  This logging feature is provided through [HTTParty](https://www.rubydoc.info/github/jnunemaker/httparty/HTTParty/ClassMethods#logger-instance_method).
+
+### Debugging requests
+You can configure debugging requests by setting the `enable_debug_output` configuration which is false by default. This feature is also provided through [HTTParty](https://www.rubydoc.info/github/jnunemaker/httparty/HTTParty/ClassMethods#debug_output-instance_method).
+
+You can configure the `debug_output_stream` which is set to `$stderr` by default.
+
+
 
 ## Development
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

@@ -3,12 +3,15 @@
 require "spec_helper"
 
 describe "Configuring Primo" do
+  before do
+    Primo.configure
+  end
+
+  after do
+    Primo.configuration = nil
+  end
 
   context "when no attributes are set in the passed block" do
-
-    before(:all) do
-      Primo.configure {}
-    end
 
     it "uses default values" do
       expect(Primo.configuration.apikey).to eql "TEST_API_KEY"
@@ -24,25 +27,22 @@ describe "Configuring Primo" do
       expect(Primo.configuration.pcavailability).to eql false
       expect(Primo.configuration.timeout).to eql 5
       expect(Primo.configuration.validate_parameters).to eql true
-    end
-
-    after(:all) do
-      Primo.configuration = nil
+      expect(Primo.configuration.enable_log_requests).to eql false
+      expect(Primo.configuration.logger).to be_instance_of(Logger)
+      expect(Primo.configuration.log_level).to eq(:info)
+      expect(Primo.configuration.enable_debug_output).to eql false
+      expect(Primo.configuration.debug_output_stream).to eq($stderr)
     end
   end
 
   context "params set limit of 50" do
-    before(:all) do
-      Primo.configure {}
-    end
-
     it "doubles the default timeout" do
       expect(Primo.configuration.timeout("limit" => 50)).to eql 10
     end
   end
 
   context "when attributes are set in the passed block" do
-    before(:all) do
+    before do
       Primo.configure do |config|
         config.apikey =  "SOME_OTHER_API_KEY"
       end
@@ -65,9 +65,32 @@ describe "Configuring Primo" do
       expect(Primo.configuration.vid).to eql :default_vid
       expect(Primo.configuration.scope).to eql :default_scope
     end
+  end
 
-    after(:all) do
-      Primo.configuration = nil
+  context "when we enable logging via configuration" do
+    before do
+      Primo.configure do |config|
+        config.enable_log_requests = true
+      end
+    end
+
+    it "should eanble logging in Primo::Search class" do
+      expect(Primo::Search.default_options[:logger]).to eq(Primo.configuration.logger)
+      expect(Primo::Search.default_options[:log_level]).to eq(Primo.configuration.log_level)
+      expect(Primo::Search.default_options[:log_format]).to eq(Primo.configuration.log_format)
     end
   end
+
+  context "when we enable debugging via configuration" do
+    before do
+      Primo.configure do |config|
+        config.enable_debug_output = true
+      end
+    end
+
+    it "should set debugging options for Primo::Search class" do
+      expect(Primo::Search.default_options[:debug_output]).to eq(Primo.configuration.debug_output_stream)
+    end
+  end
+
 end
