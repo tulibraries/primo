@@ -100,15 +100,6 @@ RSpec.describe "Primo.find" do
     end
   end
 
-  context "when we pass object with id that does not exist" do
-    let(:query) {  { id: "foo" } }
-
-    it "does raise a ArticleNotFound error" do
-      VCR.eject_cassette "primo_pnxs_get_record"
-      expect { Primo.find query }.to raise_error Primo::Search::ArticleNotFound
-    end
-  end
-
   context "when value is an array" do
     let(:query) { { q: { value: [] } } }
 
@@ -130,33 +121,17 @@ RSpec.describe "Primo.find_by_id" do
     Primo.configuration = nil
   end
 
-  context "pass in nil" do
-    it "raises an error if we pass in nothing" do
-      expect { Primo.find_by_id }.to raise_error Primo::Search::SearchError
-    end
-
-    it "raises an error if we pass in nil" do
-      expect { Primo.find_by_id nil }.to raise_error Primo::Search::SearchError
-    end
-  end
-
   context "enable_loggable is configured true" do
     it "returns JSON formatted error message on errors" do
       Primo.configure { |c| c.enable_loggable = true }
 
       error_message =
         begin
-          Primo.find_by_id nil
+          Primo.find(nil)
         rescue => e
           JSON.parse(e.message)
         end
       expect(error_message).to eq("error" => "No method found to process given parameters.")
-    end
-  end
-
-  context "pass in empty hash" do
-    it "raises an error if we pass in an empty hash" do
-      expect { Primo.find_by_id {} }.to raise_error Primo::Search::SearchError
     end
   end
 

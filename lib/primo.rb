@@ -16,6 +16,8 @@ module Primo
       return find(q: query)
     end
 
+    return find_by_id(options) if options[:id]
+
     if  options[:q]&.is_a? Hash
       if options[:q][:value]&.is_a? Array
         queries = options[:q][:value]
@@ -37,6 +39,11 @@ module Primo
       return find_by_id(id: params)
     end
 
-    find(params)
+    query = Primo::Search::Query.new(
+      field: "any",
+      value: params["id"],
+      precision: "exact")
+
+    find(q: query)
   end
 end
