@@ -149,60 +149,16 @@ module Primo
         end
     end
 
-    # NOTE: This API may be deprecated as I don't see documentation on Alma API
-    # docs pages anymore.
-    #
-    # Encapsulates the GET /v1/search/{context}/{recordId} Primo REST API Method
-    # URL and Parameters.
-    class RecordMethod < BaseSearchMethod
-      def url
-        context = @params[:context] || Primo.configuration.context
-        id = CGI.unescape(@params[:id])
-        url = Primo.configuration.region + RESOURCE + "/#{context}/#{id}"
-
-        if (URI.parse url rescue false)
-          url
-        else
-          Primo.configuration.region + RESOURCE + "/#{context}/#{CGI.escape(id)}"
-        end
-      end
-
-      def params
-        # Add defaults and allow override by passed in @params.
-        {}.merge(vid_scope)
-          .merge auth
-          .merge(@params)
-          .select { |k, v| !URL_KEYS.include? k }
-      end
-
+    class RecordMethod < SearchMethod
       def self.can_process?(params = {})
         params ||= {}
-        params.include?(:id)
+        params.include?(:id) && params[:id].present?
       end
 
       def validate_response(response)
         message = "The article for id #{@params[:id]} was not found."
         raise ArticleNotFound.new(message, loggable) unless response.dig("pnx", "search", "title")
       end
-
-      private
-
-        URL_KEYS = %i(id context)
-        PARAMETER_KEYS = %i(inst lang searchCDI apikey inst pcAvailability pcavailability vid scope)
-
-        def validators
-          [
-          { query: :only_known_parameters?,
-            message: lambda { |p| "only known parameters are passed " } },
-          ]
-        end
-
-        def only_known_parameters?(params)
-          keys = (PARAMETER_KEYS + URL_KEYS)
-          string_keys = keys.map(&:to_s)
-          Primo.configuration.validate_parameters ?
-            (params.keys - keys - string_keys).empty? : true
-        end
     end
 
     # Catch all Method.
