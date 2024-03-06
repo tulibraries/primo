@@ -39,9 +39,11 @@ module Primo
       return find_by_id(id: params)
     end
 
+    id = params[:id] || params["id"]
+
     query = Primo::Search::Query.new(
       field: "any",
-      value: params["id"],
+      value: id,
       precision: "exact")
 
     find(q: query)
