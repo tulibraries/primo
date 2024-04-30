@@ -18,6 +18,7 @@ GEM
     crack (1.0.0)
       bigdecimal
       rexml
+    csv (3.3.0)
     debug_inspector (1.2.0)
     diff-lcs (1.5.1)
     ffi (1.15.5)
@@ -37,7 +38,8 @@ GEM
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
     hashdiff (1.1.0)
-    httparty (0.21.0)
+    httparty (0.22.0)
+      csv
       mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
     json (2.7.2)
