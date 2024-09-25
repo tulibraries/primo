@@ -66,6 +66,9 @@ Primo.configure do |config|
   # By default timeout is set to 5 seconds
   config.timeout = 10
 
+  # By default retries is set to 3 times
+  config.retries = 3
+
   # By default we validate parameters.
   config.validate_parameters = false
 

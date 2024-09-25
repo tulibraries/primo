@@ -38,7 +38,7 @@ module Primo
     attr_accessor :apikey, :region, :operator, :field, :precision
     attr_accessor :context, :environment, :inst, :vid, :scope, :pcavailability, :enable_loggable
     attr_accessor :timeout, :validate_parameters, :enable_log_requests, :enable_debug_output
-    attr_accessor :logger, :log_level, :log_format, :debug_output_stream
+    attr_accessor :logger, :log_level, :log_format, :debug_output_stream, :retries
 
     def initialize
       @apikey = "TEST_API_KEY"
@@ -52,6 +52,7 @@ module Primo
       @pcavailability = false
       @enable_loggable = false
       @timeout = 5
+      @retries = 3
       @validate_parameters = true
       @enable_log_requests = false
       # debug_output should only be enabled in development mode.

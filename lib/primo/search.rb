@@ -51,7 +51,16 @@ module Primo
       params = params.to_h.transform_keys(&:to_sym)
       method = get_method params
       (url, query) = url(params)
-      new super(url, query:, timeout: Primo.configuration.timeout(params)), method
+      retry_count = Primo.configuration.retries
+      begin
+        new super(url, query:, timeout: Primo.configuration.timeout(params)), method
+      rescue Net::ReadTimeout
+        if (retry_count -= 1) > 0
+          retry
+        else
+          raise "Timeout retry limit exceeded"
+        end
+      end
     end
 
     def self.url(params = {})

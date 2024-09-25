@@ -26,6 +26,7 @@ describe "Configuring Primo" do
       expect(Primo.configuration.scope).to eql nil
       expect(Primo.configuration.pcavailability).to eql false
       expect(Primo.configuration.timeout).to eql 5
+      expect(Primo.configuration.retries).to eql 3
       expect(Primo.configuration.validate_parameters).to eql true
       expect(Primo.configuration.enable_log_requests).to eql false
       expect(Primo.configuration.logger).to be_instance_of(Logger)
