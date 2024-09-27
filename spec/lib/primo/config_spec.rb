@@ -42,6 +42,18 @@ describe "Configuring Primo" do
     end
   end
 
+  context "Override Timeout Retries" do
+    before do
+      Primo.configure do |config|
+        config.retries = 5
+      end
+    end
+
+    it "is possible to override timeout retries to 5" do
+      expect(Primo.configuration.retries).to eql 5
+    end
+  end
+
   context "when attributes are set in the passed block" do
     before do
       Primo.configure do |config|
