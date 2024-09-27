@@ -215,6 +215,12 @@ RSpec.describe Primo::Search do
   end
 
   context "timetout retry" do
+    before do
+      Primo.configure do |config|
+        config.enable_retries = true
+      end
+    end
+
     let(:options) {
       q = Primo::Search::Query.new(
         precision: :contains,

@@ -51,14 +51,20 @@ module Primo
       params = params.to_h.transform_keys(&:to_sym)
       method = get_method params
       (url, query) = url(params)
-      retry_count = Primo.configuration.retries
-      begin
+
+      # [TODO] Clean this up before submitting PR review  -- 2024-09-27
+      unless Primo.configuration.enable_retries
         new super(url, query:, timeout: Primo.configuration.timeout(params)), method
-      rescue Net::ReadTimeout
-        if (retry_count -= 1) > 0
-          retry
-        else
-          raise "Timeout retry limit exceeded"
+      else
+        retry_count = Primo.configuration.retries
+        begin
+          new super(url, query:, timeout: Primo.configuration.timeout(params)), method
+        rescue Net::ReadTimeout
+          if (retry_count -= 1) > 0
+            retry
+          else
+            raise "Timeout retry limit exceeded"
+          end
         end
       end
     end
