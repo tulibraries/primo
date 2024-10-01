@@ -234,12 +234,12 @@ RSpec.describe Primo::Search do
     it "should retry if a timeout occurs" do
       allow(Primo.configuration).to receive(:timeout).and_raise(Net::ReadTimeout).once
       # [TODO] Fix potential false-positive when checking an exception DOES NOT occur
-      expect { Primo::Search::get(options) }.not_to raise_error("Timeout retry limit exceeded")
+      expect { Primo::Search::get(options) }.not_to raise_error("Primo timeout retry limit exceeded")
     end
 
     it "should raise exception if max timeout retries occurs" do
       allow(Primo.configuration).to receive(:timeout).and_raise(Net::ReadTimeout)
-      expect { Primo::Search::get(options) }.to raise_error("Timeout retry limit exceeded")
+      expect { Primo::Search::get(options) }.to raise_error("Primo timeout retry limit exceeded")
     end
   end
 end

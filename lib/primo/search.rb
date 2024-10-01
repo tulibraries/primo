@@ -52,7 +52,6 @@ module Primo
       method = get_method params
       (url, query) = url(params)
 
-      # [TODO] Clean this up before submitting PR review  -- 2024-09-27
       unless Primo.configuration.enable_retries
         new super(url, query:, timeout: Primo.configuration.timeout(params)), method
       else
@@ -60,10 +59,11 @@ module Primo
         begin
           new super(url, query:, timeout: Primo.configuration.timeout(params)), method
         rescue Net::ReadTimeout
+          Primo.configuration.logger.warn("Primo request timed out. Retries remaining #{retry_count}")
           if (retry_count -= 1) > 0
             retry
           else
-            raise "Timeout retry limit exceeded"
+            raise "Primo timeout retry limit exceeded"
           end
         end
       end
