@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    primo (0.3.1)
+    primo (0.4.0)
       httparty
 
 GEM

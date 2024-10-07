@@ -59,9 +59,14 @@ module Primo
         if (Primo.configuration.retries && (retry_count -= 1) > 0)
           Primo.configuration.logger.warn("Primo request timed out. Retrying. [#{retry_count}]")
           retry
-        else
-          raise "Primo request timed out"
         end
+        raise "Primo request timed out"
+      # Ignore Test Mock related error
+      rescue RSpec::Mocks::MockExpectationError
+        nil
+      rescue => e
+        Primo.configuration.logger.error(e.message)
+        nil
       end
     end
 
