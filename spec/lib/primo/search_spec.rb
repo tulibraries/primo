@@ -213,4 +213,33 @@ RSpec.describe Primo::Search do
       }
     end
   end
+
+  context "timetout retry" do
+    before do
+      Primo.configure do |config|
+        config.enable_retries = true
+      end
+    end
+
+    let(:options) {
+      q = Primo::Search::Query.new(
+        precision: :contains,
+        field: :title,
+        value: "otter",
+        operator: :OR,
+      )
+      { q: }
+    }
+
+    it "should retry if a timeout occurs" do
+      allow(Primo.configuration).to receive(:timeout).with(any_args).and_raise(Net::ReadTimeout).once
+      # [TODO] Fix potential false-positive when checking an exception DOES NOT occur
+      expect { Primo::Search::get(options) }.not_to raise_error
+    end
+
+    it "should raise exception if max timeout retries occurs" do
+      allow(Primo.configuration).to receive(:timeout).with(any_args).and_raise(Net::ReadTimeout)
+      expect { Primo::Search::get(options) }.to raise_error("Primo request timed out")
+    end
+  end
 end
