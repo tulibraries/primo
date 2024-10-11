@@ -54,19 +54,17 @@ module Primo
 
       retry_count = Primo.configuration.enable_retries ? Primo.configuration.retries : 0
       begin
-        new super(url, query:, timeout: Primo.configuration.timeout(params)), method
-      rescue Net::ReadTimeout
+        #new super(url, query:, timeout: Primo.configuration.timeout(params)), method
+        #HTTParty.get(url, query, timeout: Primo.configuration.timeout(params))
+        response = HTTParty.get(url, query:, timeout: 3)
+        new response, method
+      rescue => e
         if (Primo.configuration.retries && (retry_count -= 1) > 0)
-          Primo.configuration.logger.warn("Primo request timed out. Retrying. [#{retry_count}]")
+          Primo.configuration.logger.warn("#{e.message}. Retrying. [#{retry_count}]")
           retry
         end
-        raise "Primo request timed out"
-      # Ignore Test Mock related error
-      rescue RSpec::Mocks::MockExpectationError
-        nil
-      rescue => e
-        Primo.configuration.logger.error(e.message)
-        nil
+       Primo.configuration.logger.error("#{e.message}. Max retries exceeded")
+        raise ("Retries failed")
       end
     end
 
