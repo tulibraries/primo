@@ -26,6 +26,8 @@ describe "Configuring Primo" do
       expect(Primo.configuration.scope).to eql nil
       expect(Primo.configuration.pcavailability).to eql false
       expect(Primo.configuration.timeout).to eql 5
+      expect(Primo.configuration.retries).to eql 3
+      expect(Primo.configuration.enable_retries).to eql false
       expect(Primo.configuration.validate_parameters).to eql true
       expect(Primo.configuration.enable_log_requests).to eql false
       expect(Primo.configuration.logger).to be_instance_of(Logger)
@@ -38,6 +40,23 @@ describe "Configuring Primo" do
   context "params set limit of 50" do
     it "doubles the default timeout" do
       expect(Primo.configuration.timeout("limit" => 50)).to eql 10
+    end
+  end
+
+  context "Override Timeout Retries" do
+    before do
+      Primo.configure do |config|
+        config.enable_retries = true
+        config.retries = 5
+      end
+    end
+
+    it "is possible to override enable timeout" do
+      expect(Primo.configuration.enable_retries).to eql true
+    end
+
+    it "is possible to override timeout retries to 5" do
+      expect(Primo.configuration.retries).to eql 5
     end
   end
 

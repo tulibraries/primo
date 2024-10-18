@@ -213,4 +213,46 @@ RSpec.describe Primo::Search do
       }
     end
   end
+
+  context "timetout retry" do
+    before do
+      Primo.configure do |config|
+        config.enable_retries = true
+        config.retries = 3
+      end
+
+      @httparty = class_double("HTTParty")
+    end
+
+    let!(:options) {
+      q = Primo::Search::Query.new(
+        precision: :contains,
+        field: :title,
+        value: "otter",
+        operator: :OR,
+      )
+      { q: }
+    }
+
+    it "should retry if 1 timeout occurs" do
+      allow(@httparty).to receive(:get).with(any_args).and_raise(Net::ReadTimeout).once
+      expect { Primo::Search::get(options) }.not_to raise_error
+    end
+
+    it "should retry if 2 timeouts occur" do
+      allow(@httparty).to receive(:get).with(any_args).and_raise(Net::ReadTimeout).twice
+      expect { Primo::Search::get(options) }.not_to raise_error
+    end
+
+    it "should raise exception if max timeout retries occurs" do
+      allow(HTTParty).to receive(:get).with(any_args).and_raise(Net::ReadTimeout)
+      expect { Primo::Search::get(options) }.to raise_error("Retries failed")
+    end
+
+    it "should raise exception if retries occurs" do
+      Primo.configuration.enable_retries = false
+      allow(HTTParty).to receive(:get).with(any_args).and_raise(Net::ReadTimeout).once
+      expect { Primo::Search::get(options) }.to raise_error("Retries failed")
+    end
+  end
 end

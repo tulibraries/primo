@@ -51,7 +51,21 @@ module Primo
       params = params.to_h.transform_keys(&:to_sym)
       method = get_method params
       (url, query) = url(params)
-      new super(url, query:, timeout: Primo.configuration.timeout(params)), method
+
+      retry_count = Primo.configuration.enable_retries ? Primo.configuration.retries : 0
+      begin
+        #new super(url, query:, timeout: Primo.configuration.timeout(params)), method
+        #HTTParty.get(url, query, timeout: Primo.configuration.timeout(params))
+        response = HTTParty.get(url, query:, timeout: 3)
+        new response, method
+      rescue => e
+        if (Primo.configuration.retries && (retry_count -= 1) > 0)
+          Primo.configuration.logger.warn("#{e.message}. Retrying. [#{retry_count}]")
+          retry
+        end
+       Primo.configuration.logger.error("#{e.message}. Max retries exceeded")
+        raise ("Retries failed")
+      end
     end
 
     def self.url(params = {})
