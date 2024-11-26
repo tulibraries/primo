@@ -18,6 +18,11 @@ RSpec.describe "#{Primo::Search}#get" do
       expect { Primo::Search::get() }.to raise_error(Primo::Search::SearchError)
       expect { Primo::Search::get nil }.to raise_error(Primo::Search::SearchError)
     end
+
+    it "should log a pnxs error" do
+      expect { Primo::Search::get() }.to raise_error(Primo::Search::SearchError)
+      expect { Primo::Search::get nil }.to raise_error(Primo::Search::SearchError)
+    end
   end
 
   context "passing invalid query" do
@@ -194,6 +199,10 @@ RSpec.describe Primo::Search do
       expect { pnxs }.to raise_error(Primo::Search::SearchError)
     end
 
+    it "should log a pnxs error" do
+      expect { pnxs }.to raise_error(Primo::Search::SearchError)
+    end
+
     it "should capture the primo endpoint and status code" do
       stub_request(:get, /.*www\.foobar\.com\/.*/).
       to_return(status: 500, body: "Nope")
@@ -211,6 +220,56 @@ RSpec.describe Primo::Search do
         expect(lines[0]).to eq "Attempting to work with an invalid response: 500"
         expect(lines[1]).to eq "Endpoint: https://www.foobar.com/primo/v1/search?apikey=TEST_API_KEY&vid=&scope=&q=title%2Ccontains%2Cotter%2COR&pcAvailability=false"
       }
+    end
+  end
+
+  context "timeout retries" do
+    before do
+      Primo.configure do |config|
+        config.enable_retries = true
+        config.retries = 3
+      end
+
+    end
+
+    before(:each) do
+      @string_io = StringIO.new
+      Primo.configuration.logger = Logger.new(@string_io)
+    end
+
+    let!(:options) {
+      q = Primo::Search::Query.new(
+        precision: :contains,
+        field: :title,
+        value: "otter",
+        operator: :OR,
+      )
+      { q: }
+    }
+
+    it "should retry if 1 timeout occurs" do
+      allow(HTTParty).to receive(:get).with(any_args).and_raise(Net::ReadTimeout).once.and_call_original
+      expect { Primo::Search::get(options) }.not_to raise_error
+    end
+
+    it "should retry if 2 timeouts occur" do
+      allow(HTTParty).to receive(:get).with(any_args).and_raise(Net::ReadTimeout).twice.and_call_original
+      expect { Primo::Search::get(options) }.not_to raise_error
+    end
+
+    it "should raise exception if max timeout retries occurs" do
+      allow(HTTParty).to receive(:get).with(any_args).and_raise(Net::ReadTimeout)
+      expect { Primo::Search::get(options) }.to raise_error("Get retries exceeded")
+      expect(@string_io.string).to include("Net::ReadTimeout. Retrying. [2]")
+      expect(@string_io.string).to include("Net::ReadTimeout. Retrying. [1]")
+      expect(@string_io.string).to include("Get retries exceeded")
+    end
+
+    it "should raise exception if retries disabled " do
+      Primo.configuration.enable_retries = false
+      allow(HTTParty).to receive(:get).with(any_args).and_raise(Net::ReadTimeout).once
+      expect { Primo::Search::get(options) }.to raise_error(RuntimeError, "Get retries exceeded")
+      expect(@string_io.string).to include("Get retries exceeded")
     end
   end
 end
