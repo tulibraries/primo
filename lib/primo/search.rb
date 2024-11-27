@@ -46,28 +46,31 @@ module Primo
       self.send(x)
     end
 
+    def self.with_retry
+      max_attempts = Primo.configuration.enable_retries ? Primo.configuration.retries : 0
+      attempts = 0
+      begin
+        attempts += 1
+        yield
+      rescue => e
+        if attempts < max_attempts
+          Primo.configuration.logger.warn("#{e.message}. Retrying. [#{attempts}]")
+          retry
+        else
+          Primo.configuration.logger.error(e.message)
+          raise
+        end
+      end
+    end
+
     # Overrides HTTParty::get in order to add some custom validations.
     def self.get(params = {})
       params = params.to_h.transform_keys(&:to_sym)
       method = get_method params
       (url, query) = url(params)
 
-      retry_count = Primo.configuration.enable_retries ? Primo.configuration.retries : 0
-      begin
-        response = HTTParty.get(url, query:, timeout: Primo.configuration.timeout(params))
-        new response, method
-      rescue => e
-        if (Primo.configuration.retries && (retry_count -= 1) > 0)
-          Primo.configuration.logger.warn("#{e.message}. Retrying. [#{retry_count}]")
-          retry
-        end
-        if (e.message.match("Net::ReadTimeout"))
-          Primo.configuration.logger.error("Get retries exceeded")
-          raise "Get retries exceeded"
-        else
-          Primo.configuration.logger.error(e.message)
-          raise e
-        end
+      with_retry do
+        new super(url, query:, timeout: Primo.configuration.timeout(params)), method
       end
     end
 

@@ -178,6 +178,12 @@ RSpec.describe Primo::Search do
     expect(pnxs.docs.first["date"]).to eq("1995")
   end
 
+  # Test that with_retry is hooked up.
+  it "should call our #with_retry method" do
+    allow(Primo::Search).to receive(:with_retry).and_return("with_retry is being called from within get method.")
+    expect(pnxs).to eq("with_retry is being called from within get method.")
+  end
+
   context "getting 400 response from server" do
     let(:pnxs) {
 
@@ -222,54 +228,74 @@ RSpec.describe Primo::Search do
       }
     end
   end
+end
 
-  context "timeout retries" do
-    before do
-      Primo.configure do |config|
-        config.enable_retries = true
-        config.retries = 3
-      end
+RSpec.describe "#{Primo::Search}#with_retry" do
+  before(:all) do
+    Primo.configure
+  end
 
+  context "simple block is passed using default configuration" do
+    it "should just execute the block without issues" do
+      expect(Primo::Search.with_retry { "foo" }).to eq "foo"
     end
+  end
 
-    before(:each) do
+  context "simple block and configurion is specifically disabled" do
+    it "should just execute the block without issues" do
+      Primo.configuration.enable_retries = false
+      expect(Primo::Search.with_retry { "foo" }).to eq "foo"
+    end
+  end
+
+  context "simple block and configurion is specifically enabled" do
+    it "should just execute the block without issues" do
+      Primo.configuration.enable_retries = true
+      expect(Primo::Search.with_retry { "foo" }).to eq "foo"
+    end
+  end
+
+  context "a block that throws an error is passed and retries are not enabled"  do
+    it "should throw en error" do
+      Primo.configuration.enable_retries = false
+
+      expect { Primo::Search.with_retry { raise StandardError.new("Error") } }.to raise_error
+    end
+  end
+
+
+  context "a block that always throws an error is passed and retries are enabled"  do
+    it "should retry but eventually throw an error" do
+      Primo.configuration.enable_retries = true
       @string_io = StringIO.new
       Primo.configuration.logger = Logger.new(@string_io)
+
+
+      expect { Primo::Search.with_retry { raise StandardError.new("Error Foo") } }.to raise_error
+      expect(@string_io.string).to include("WARN -- : Error Foo. Retrying. [1]")
+      expect(@string_io.string).to include("WARN -- : Error Foo. Retrying. [2]")
+      expect(@string_io.string).to include("ERROR -- : Error Foo")
     end
+  end
 
-    let!(:options) {
-      q = Primo::Search::Query.new(
-        precision: :contains,
-        field: :title,
-        value: "otter",
-        operator: :OR,
-      )
-      { q: }
-    }
+  context "a block that throws one error but then succeeds"  do
+    it "should retry but eventually succeed" do
+      Primo.configuration.enable_retries = true
+      @string_io = StringIO.new
+      @throw_error = true
+      Primo.configuration.logger = Logger.new(@string_io)
 
-    it "should retry if 1 timeout occurs" do
-      allow(HTTParty).to receive(:get).with(any_args).and_raise(Net::ReadTimeout).once.and_call_original
-      expect { Primo::Search::get(options) }.not_to raise_error
-    end
 
-    it "should retry if 2 timeouts occur" do
-      allow(HTTParty).to receive(:get).with(any_args).and_raise(Net::ReadTimeout).twice.and_call_original
-      expect { Primo::Search::get(options) }.not_to raise_error
-    end
+      expect(Primo::Search.with_retry {
+        if (@throw_error)
+          @throw_error = false
+          raise StandardError.new("Error Foo")
+        else
+          "No errors!"
+        end
+      }).to eq("No errors!")
 
-    it "should raise exception if max timeout retries occurs" do
-      allow(HTTParty).to receive(:get).with(any_args).and_raise(Net::ReadTimeout)
-      expect { Primo::Search::get(options) }.to raise_error("Get retries exceeded")
-      expect(@string_io.string).to include("Net::ReadTimeout. Retrying. [2]")
-      expect(@string_io.string).to include("Net::ReadTimeout. Retrying. [1]")
-      expect(@string_io.string).to include("Get retries exceeded")
-    end
-
-    it "should raise exception if retries disabled " do
-      Primo.configuration.enable_retries = false
-      allow(HTTParty).to receive(:get).with(any_args).and_raise(Net::ReadTimeout).once
-      expect { Primo::Search::get(options) }.to raise_error(RuntimeError, "Get retries exceeded")
-      expect(@string_io.string).to include("Get retries exceeded")
+      expect(@string_io.string).to include("WARN -- : Error Foo. Retrying. [1]")
     end
   end
 end
