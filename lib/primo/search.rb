@@ -2,6 +2,7 @@
 
 require "httparty"
 require "forwardable"
+require "ostruct"
 
 module Primo
   # Encapsulates the Primo Search REST API
