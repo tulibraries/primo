@@ -2,10 +2,12 @@ name: Lint and Test
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    types: [ opened, synchronize, reopened ]
-    branches: [ main ]
+    branches-ignore:
+      - main
+  workflow_dispatch: {}
+
+env:
+  RAILS_ENV: test
 
 jobs:
   lint:
@@ -14,8 +16,6 @@ jobs:
       fail-fast: true
       matrix:
         ruby-version: ['3.4']
-    env:
-      RAILS_ENV: test
     steps:
       - uses: actions/checkout@v4
       - name: Setup Ruby
@@ -34,8 +34,6 @@ jobs:
       fail-fast: true
       matrix:
         ruby-version: ['3.4']
-    env:
-      RAILS_ENV: test
     steps:
       - uses: actions/checkout@v4
       - name: Setup Ruby
@@ -45,4 +43,4 @@ jobs:
           bundler-cache: true
 
       - name: Run tests
-        run: bundle exec rspec
+        run: bundle exec rspec spec
