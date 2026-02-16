@@ -11,7 +11,7 @@ GEM
       public_suffix (>= 2.0.2, < 7.0)
     ast (2.4.3)
     bigdecimal (4.0.1)
-    binding_of_caller (1.0.1)
+    binding_of_caller (2.0.0)
       debug_inspector (>= 1.2.0)
     byebug (13.0.0)
       reline (>= 0.6.0)
