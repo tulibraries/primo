@@ -155,6 +155,7 @@ DEPENDENCIES
   bundler (>= 2.0)
   guard
   guard-rspec
+  json (>= 2.21)
   primo!
   pry
   pry-byebug
