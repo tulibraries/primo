@@ -6,3 +6,7 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 # Specify your gem's dependencies in primo.gemspec
 gemspec
+
+group :debug do
+  gem "json", "~> 2.21"
+end
