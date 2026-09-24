@@ -8,5 +8,5 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 gemspec
 
 group :debug do
-  gem "json", "~> 2.21"
+  gem "json", "~> 3.0"
 end
